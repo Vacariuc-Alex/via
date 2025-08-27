@@ -1,29 +1,25 @@
-import type { Metadata } from "next";
-import { Mona_Sans } from "next/font/google";
+import type {Metadata} from "next";
+import {Mona_Sans} from "next/font/google";
 import "./globals.css";
+import {Toaster} from "sonner";
 
 const monaSans = Mona_Sans({
-  variable: "--font-mona-sans",
-  subsets: ["latin"],
+    variable: "--font-mona-sans",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Virtual Interview Assistant",
-  description: "An Al-powered platform for preparing for mock interviews",
+    title: "Virtual Interview Assistant",
+    description: "An Al-powered platform for preparing for mock interviews",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" className="dark">
-      <body
-        className={`${monaSans.className}npx shadcn@latest init antialiased`}
-      >
-        {children}
-      </body>
-    </html>
-  );
+export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
+    return (
+        <html lang="en" className="dark">
+            <body className={`${monaSans.className}npx shadcn@latest init antialiased pattern`}>
+                {children}
+                <Toaster/>
+            </body>
+        </html>
+    );
 }
