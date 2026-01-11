@@ -12,6 +12,9 @@ import Link from "next/link";
 import {toast} from "sonner";
 import FormField from "@/components/FormField";
 import {useRouter} from "next/navigation";
+import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
+import {auth} from "@/firebase/client";
+import {signIn, signUp} from "@/lib/actions/auth.action";
 
 const authFormSchema = (type: FormType) => {
     return z.object({
@@ -33,18 +36,41 @@ const AuthForm = ({type}: { type: FormType }) => {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             if (type === "sign-in") {
+                const {email, password} = values;
+                const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+                const idToken = await userCredentials.user.getIdToken();
+                if(!idToken) {
+                    toast.error("Failed to sign in!");
+                    return;
+                }
+                await signIn({email, idToken});
                 toast.success("You have successfully logged in!");
                 router.push("/");
             } else {
+                const {name, email, password} = values;
+                const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+                const result = await signUp({
+                    uid: userCredentials.user.uid,
+                    name: name!,
+                    email,
+                    password});
+                if (!result?.success) {
+                    toast.error(result?.message);
+                    return;
+                }
                 toast.success("Account created successfully!");
                 router.push("/sign-in");
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
+                toast.error("Email or password is incorrect!");
+            } else {
+                toast.error("Unexpected error has occurred.");
+            }
             console.error(error);
-            toast(`Unexpected error has occured: ${error}`);
         }
     }
 
