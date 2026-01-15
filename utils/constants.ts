@@ -1,4 +1,4 @@
-// import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
+// import { CreateAssistantDTO } from "@ai-ai/web/dist/api";
 // import { z } from "zod";
 
 export const mappings = {
@@ -228,3 +228,43 @@ export const dummyInterviews: Interview[] = [
     createdAt: "2024-03-14T15:30:00Z",
   },
 ];
+
+export const PUTER_CONFIG = {
+  provider: 'elevenlabs',
+  voice: 'Xb7hH8MSUJpSbSDYk0k2',
+  model: 'eleven_multilingual_v2'
+};
+
+export const UNRECOGNIZED_SPEECH_ERROR_MESSAGES = [
+  "I’m sorry, I didn’t catch your answer. Could you please repeat?",
+  "I still couldn’t hear your response. Please try speaking clearly.",
+  "I’m still not hearing a response from you.",
+];
+
+export const UNDETECTED_AUDIO_ERROR_MESSAGES = [
+  "It seems I’m having trouble accessing your microphone. Could you please check it?",
+  "I still cannot hear you. Please make sure your microphone is enabled.",
+  "Your microphone may be muted or unavailable.",
+];
+
+export const FINAL_ERROR_MESSAGE = "It looks like there are connection issues. Unfortunately, we need to end this call.";
+export const FINAL_WORKFLOW_MESSAGE = "Thank you for your answers, the interview will be generated in a couple of seconds!";
+
+export const TRANSCRIPT_MESSAGE_DELAY = 3000;
+export const AUDIO_ERROR_RETRY_DELAY = 500;
+
+export const MAX_ERROR_RETRIES = 3;
+
+export const enum InterviewEvent {
+  CALL_START = "call-start",
+  CALL_END = "call-end",
+  SPEECH_START = "speech-start",
+  SPEECH_END = "speech-end",
+  MESSAGE = "message"
+};
+
+export const enum QuestionType {
+  SAY = "say",
+  ASK = "ask",
+  END = "end",
+};

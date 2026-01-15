@@ -1,22 +1,76 @@
-import React from 'react'
-import Image from "next/image";
-import {cn} from "@/lib/utils";
+"use client";
+
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createInterviewController } from '@/utils/interview/orchestration';
+import Image from 'next/image';
+import { cn } from '@/utils/utils';
+import { InterviewEvent } from '@/utils/constants';
 
 enum CallStatus {
     INACTIVE = "INACTIVE",
     CONNECTING = "CONNECTING",
     ACTIVE = "ACTIVE",
-    FINISHED = "FINISHED"
+    FINISHED = "FINISHED",
 }
 
-const Agent = ({userName}: AgentProps) => {
-    const callStatus = CallStatus.FINISHED;
-    const isSpeaking = true;
-    const messages = [
-        "What is your name?",
-        "My name is John Doe!"
-    ];
-    const lastMessage = messages[messages.length - 1];
+interface SavedMessage {
+    role: "user" | "assistant" | "system";
+    content: string;
+}
+
+interface AgentProps {
+    userName: string;
+    userId: string;
+    type: string;
+}
+
+export default function Agent({ userName, userId }: AgentProps) {
+    const router = useRouter();
+    const controllerRef = useRef<ReturnType<typeof createInterviewController> | null>(null);
+
+    const [callStatus, setCallStatus] = useState(CallStatus.INACTIVE);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [message, setMessage] = useState<SavedMessage | null>(null);
+
+    useEffect(() => {
+        if (callStatus === CallStatus.FINISHED) {
+            router.push('/');
+        }
+    }, [callStatus]);
+
+    function handleCall() {
+        setCallStatus(CallStatus.CONNECTING);
+
+        const controller = createInterviewController(userName, userId);
+        controllerRef.current = controller;
+
+        const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+        const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+        const onSpeechStart = () => setIsSpeaking(true);
+        const onSpeechEnd = () => setIsSpeaking(false);
+        const onMessage = (message: any) => {
+            if (message.type !== "transcript" || message.transcriptType !== "final") return;
+            setMessage({
+                role: message.role,
+                content: message.content,
+            });
+        };
+
+        controller.on(InterviewEvent.CALL_START, onCallStart);
+        controller.on(InterviewEvent.CALL_END, onCallEnd);
+        controller.on(InterviewEvent.SPEECH_START, onSpeechStart);
+        controller.on(InterviewEvent.SPEECH_END, onSpeechEnd);
+        controller.on(InterviewEvent.MESSAGE, onMessage);
+        controller.start();
+    }
+
+    function handleDisconnect() {
+        controllerRef.current?.stop();
+        controllerRef.current = null;
+        setCallStatus(CallStatus.FINISHED);
+    }
+
     return (
         <>
             <div className="call-view">
@@ -34,30 +88,29 @@ const Agent = ({userName}: AgentProps) => {
                     </div>
                 </div>
             </div>
-            {messages.length > 0 && (
+            {message && (
                 <div className="transcript-border">
                     <div className="transcript">
-                        <p key={lastMessage} className={cn("transition-opacity duration-500 opacity-0", "animate-fadeIn opacity-100")}>
-                            {lastMessage}
+                        <p key={message.content} className={cn("transition-opacity duration-500 opacity-0", "animate-fadeIn opacity-100")}>
+                            {message.content}
                         </p>
                     </div>
                 </div>
             )}
             <div className="w-full flex justify-center">
                 {callStatus !== CallStatus.ACTIVE ? (
-                    <button className="relative btn-call">
-                        <span className={cn("absolute animate-ping rounded-full opacity-75", callStatus !== CallStatus.CONNECTING & "hidden")} />
+                    <button className="relative btn-call" onClick={handleCall}>
+                        <span className={cn("absolute animate-ping rounded-full opacity-75", callStatus !== CallStatus.CONNECTING && "hidden")} />
                         <span>
-                            {callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED ? "Call" : ". . ."}
+                            {callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED ? "Call" : "Loading..."}
                         </span>
                     </button>
                 ) : (
-                    <button className="btn-disconnect">
+                    <button className="btn-disconnect" onClick={handleDisconnect}>
                         <span>End</span>
                     </button>
                 )}
             </div>
         </>
-    )
+    );
 }
-export default Agent;
