@@ -1,4 +1,4 @@
-import { interviewCovers, mappings } from "@/utils/constants";
+import { INTERVIEW_COVERS, TECHSTACK_NORMALIZED_NAMES } from "@/commons/constants";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -10,13 +10,13 @@ const techIconBaseURL = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 const normalizeTechName = (tech: string) => {
   const key = tech.toLowerCase().replace(/\.js$/, "").replace(/\s+/g, "");
-  return mappings[key as keyof typeof mappings];
+  return TECHSTACK_NORMALIZED_NAMES[key as keyof typeof TECHSTACK_NORMALIZED_NAMES];
 };
 
 const checkIconExists = async (url: string) => {
   try {
     const response = await fetch(url, { method: "HEAD" });
-    return response.ok; // Returns true if the icon exists
+    return response.ok;
   } catch {
     return false;
   }
@@ -42,6 +42,6 @@ export const getTechLogos = async (techArray: string[]) => {
 };
 
 export const getRandomInterviewCover = () => {
-  const randomIndex = Math.floor(Math.random() * interviewCovers.length);
-  return `/covers${interviewCovers[randomIndex]}`;
+  const randomIndex = Math.floor(Math.random() * INTERVIEW_COVERS.length);
+  return `/covers${INTERVIEW_COVERS[randomIndex]}`;
 };

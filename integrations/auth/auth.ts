@@ -1,33 +1,35 @@
-'use server';
+"use server";
 
-import {auth, db} from "@/utils/firebase/admin";
+import {auth, db} from "@/integrations/firebase/admin";
 import {cookies} from "next/dist/server/request/cookies";
+import {DbTables} from "@/commons/enums";
+import {SESSION_COOKIE_AGE, SESSION_COOKIE_EXP, SESSION_COOKIE_NAME} from "@/commons/constants";
 
 export async function signUp(params: SignUpParams) {
     const { uid, name, email } = params;
     try {
-        const userRecord = await db.collection('users').doc(uid).get();
+        const userRecord = await db.collection(DbTables.USERS).doc(uid).get();
         if(userRecord.exists){
             return {
                 success: false,
-                message: 'User already exists! Please sign in instead!',
+                message: "User already exists! Please sign in instead!",
             }
         }
-        await db.collection('users').doc(uid).set({name, email});
+        await db.collection(DbTables.USERS).doc(uid).set({name, email});
         return {
             success: true,
-            message: 'User created successfully!'}
+            message: "User created successfully!"}
     } catch (e: any) {
-        console.error('Error creating a user', e);
-        if(e.code === 'auth/email-already-exists') {
+        console.error("Error creating a user", e);
+        if(e.code === "auth/email-already-exists") {
             return{
                 success: false,
-                message: 'This email is already in use!',
+                message: "This email is already in use!",
             }
         }
         return{
             success: false,
-            message: 'Failed to create an account!',
+            message: "Failed to create an account!",
         }
     }
 }
@@ -39,7 +41,7 @@ export async function signIn(params: SignInParams) {
         if(!userRecord) {
             return {
                 success: false,
-                message: 'User does not exist! Please sign up first!'
+                message: "User does not exist! Please sign up first!"
             }
         }
         await setSessionCookie(idToken);
@@ -47,32 +49,32 @@ export async function signIn(params: SignInParams) {
         console.log(e);
         return {
             success: false,
-            message: 'Failed to sign in!',
+            message: "Failed to sign in!",
         }
     }
 }
 
 export async function setSessionCookie(idToken: string) {
     const cookieStore = await cookies();
-    const sessionCookies = await auth.createSessionCookie(idToken, {expiresIn: 60 * 60 * 24 * 7 * 1000});
-    cookieStore.set('session', sessionCookies, {
+    const sessionCookies = await auth.createSessionCookie(idToken, {expiresIn: SESSION_COOKIE_EXP});
+    cookieStore.set(SESSION_COOKIE_NAME, sessionCookies, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,
-        secure: process.env.NODE_ENV === 'production',
+        maxAge: SESSION_COOKIE_AGE,
+        secure: process.env.NODE_ENV === "production",
         path: '/',
-        sameSite: 'lax'
+        sameSite: "lax"
     });
 }
 
 export async function getCurrentUser(): Promise<User | null> {
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('session')?.value;
+    const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
     if (!sessionCookie) {
         return null;
     }
     try {
         const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
-        const userRecord = await db.collection('users')
+        const userRecord = await db.collection(DbTables.USERS)
             .doc(decodedClaims.uid)
             .get();
         if (!userRecord.exists) {

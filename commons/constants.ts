@@ -1,7 +1,7 @@
 // import { CreateAssistantDTO } from "@ai-ai/web/dist/api";
 // import { z } from "zod";
 
-export const mappings = {
+export const TECHSTACK_NORMALIZED_NAMES = {
   "react.js": "react",
   reactjs: "react",
   react: "react",
@@ -21,18 +21,34 @@ export const mappings = {
   mongo: "mongodb",
   mongoose: "mongoose",
   mysql: "mysql",
+  mariadb: "mariadb",
   postgresql: "postgresql",
+  postgres: "postgresql",
   sqlite: "sqlite",
+  redis: "redis",
   firebase: "firebase",
+  supabase: "supabase",
+  prisma: "prisma",
   docker: "docker",
   kubernetes: "kubernetes",
-  aws: "aws",
+  k8s: "kubernetes",
+  aws: "amazonwebservices",
+  amazon: "amazonwebservices",
   azure: "azure",
-  gcp: "gcp",
+  gcp: "googlecloud",
+  googlecloud: "googlecloud",
   digitalocean: "digitalocean",
   heroku: "heroku",
+  netlify: "netlify",
+  vercel: "vercel",
+  terraform: "terraform",
+  ansible: "ansible",
+  nginx: "nginx",
+  apache: "apache",
   photoshop: "photoshop",
   "adobe photoshop": "photoshop",
+  illustrator: "illustrator",
+  figma: "figma",
   html5: "html5",
   html: "html5",
   css3: "css3",
@@ -43,58 +59,106 @@ export const mappings = {
   tailwindcss: "tailwindcss",
   tailwind: "tailwindcss",
   bootstrap: "bootstrap",
+  materialui: "materialui",
+  mui: "materialui",
   jquery: "jquery",
   typescript: "typescript",
   ts: "typescript",
   javascript: "javascript",
   js: "javascript",
-  "angular.js": "angular",
-  angularjs: "angular",
-  angular: "angular",
-  "ember.js": "ember",
-  emberjs: "ember",
-  ember: "ember",
-  "backbone.js": "backbone",
-  backbonejs: "backbone",
-  backbone: "backbone",
-  nestjs: "nestjs",
-  graphql: "graphql",
-  "graph ql": "graphql",
-  apollo: "apollo",
-  webpack: "webpack",
   babel: "babel",
-  "rollup.js": "rollup",
-  rollupjs: "rollup",
+  webpack: "webpack",
   rollup: "rollup",
-  "parcel.js": "parcel",
-  parceljs: "parcel",
+  parcel: "parcel",
+  vite: "vite",
+  vitest: "vitest",
   npm: "npm",
   yarn: "yarn",
+  pnpm: "pnpm",
   git: "git",
   github: "github",
   gitlab: "gitlab",
   bitbucket: "bitbucket",
-  figma: "figma",
-  prisma: "prisma",
+  linux: "linux",
+  ubuntu: "ubuntu",
+  windows: "windows11",
+  macos: "apple",
+  python: "python",
+  django: "django",
+  flask: "flask",
+  fastapi: "fastapi",
+  java: "java",
+  spring: "spring",
+  springboot: "spring",
+  kotlin: "kotlin",
+  scala: "scala",
+  groovy: "groovy",
+  php: "php",
+  laravel: "laravel",
+  symfony: "symfony",
+  codeigniter: "codeigniter",
+  wordpress: "wordpress",
+  strapi: "strapi",
+  contentful: "contentful",
+  nodebb: "nodejs",
+  c: "c",
+  cpp: "cplusplus",
+  cplusplus: "cplusplus",
+  csharp: "csharp",
+  dotnet: "dot-net",
+  dotnetcore: "dotnetcore",
+  go: "go",
+  golang: "go",
+  rust: "rust",
+  zig: "zig",
+  ruby: "ruby",
+  rails: "rails",
+  swift: "swift",
+  objectivec: "objectivec",
+  dart: "dart",
+  flutter: "flutter",
+  reactnative: "reactnative",
+  ionic: "ionic",
+  electron: "electron",
+  tauri: "tauri",
+  graphql: "graphql",
+  apollo: "apollographql",
   redux: "redux",
-  flux: "flux",
-  redis: "redis",
+  mobx: "mobx",
+  vuex: "vuex",
+  nuxt: "nuxtjs",
+  nuxtjs: "nuxtjs",
+  angular: "angular",
+  angularjs: "angularjs",
+  nestjs: "nestjs",
+  ember: "ember",
+  backbone: "backbonejs",
   selenium: "selenium",
-  cypress: "cypress",
+  cypress: "cypressio",
+  playwright: "playwright",
   jest: "jest",
   mocha: "mocha",
   chai: "chai",
   karma: "karma",
-  vuex: "vuex",
-  "nuxt.js": "nuxt",
-  nuxtjs: "nuxt",
-  nuxt: "nuxt",
-  strapi: "strapi",
-  wordpress: "wordpress",
-  contentful: "contentful",
-  netlify: "netlify",
-  vercel: "vercel",
-  "aws amplify": "amplify",
+  postman: "postman",
+  insomnia: "insomnia",
+  elasticsearch: "elasticsearch",
+  logstash: "logstash",
+  kibana: "kibana",
+  prometheus: "prometheus",
+  grafana: "grafana",
+  datadog: "datadog",
+  jira: "jira",
+  confluence: "confluence",
+  trello: "trello",
+  slack: "slack",
+  discord: "discordjs",
+  kafka: "apachekafka",
+  rabbitmq: "rabbitmq",
+  redisstack: "redis",
+  sqlite3: "sqlite",
+  awsamplify: "amplify",
+  amplify: "amplify"
 };
 
 // export const interviewer: CreateAssistantDTO = {
@@ -189,7 +253,7 @@ export const mappings = {
 //   finalAssessment: z.string(),
 // });
 
-export const interviewCovers = [
+export const INTERVIEW_COVERS = [
   "/adobe.png",
   "/amazon.png",
   "/facebook.png",
@@ -229,7 +293,7 @@ export const dummyInterviews: Interview[] = [
   },
 ];
 
-export const PUTER_CONFIG = {
+export const VOICE_AGENT_PROPS = {
   provider: 'elevenlabs',
   voice: 'Xb7hH8MSUJpSbSDYk0k2',
   model: 'eleven_multilingual_v2'
@@ -248,23 +312,40 @@ export const UNDETECTED_AUDIO_ERROR_MESSAGES = [
 ];
 
 export const FINAL_ERROR_MESSAGE = "It looks like there are connection issues. Unfortunately, we need to end this call.";
+
 export const FINAL_WORKFLOW_MESSAGE = "Thank you for your answers, the interview will be generated in a couple of seconds!";
 
 export const TRANSCRIPT_MESSAGE_DELAY = 3000;
+
 export const AUDIO_ERROR_RETRY_DELAY = 500;
 
 export const MAX_ERROR_RETRIES = 3;
 
-export const enum InterviewEvent {
-  CALL_START = "call-start",
-  CALL_END = "call-end",
-  SPEECH_START = "speech-start",
-  SPEECH_END = "speech-end",
-  MESSAGE = "message"
-};
+export const AI_MODEL = "openai/gpt-oss-20b";
 
-export const enum QuestionType {
-  SAY = "say",
-  ASK = "ask",
-  END = "end",
-};
+export const BUILD_PROMPT = (params: {
+  role: string;
+  level: string;
+  techstack: string;
+  type: string;
+  amount: number;
+}) => `
+  Prepare questions for a job interview.
+  The job role is ${params.role}.
+  The job experience level is ${params.level}.
+  The tech stack used in the job is: ${params.techstack}.
+  The focus between behavioural and technical questions should lean towards: ${params.type}.
+  The amount of questions required is: ${params.amount}.
+  Please return only the questions, without any additional text.
+  The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant reading.
+  Return the questions formatted like this:
+  ["Question 1", "Question 2", "Question 3"]
+  Thank you!
+`;
+
+export const SESSION_COOKIE_NAME = "session";
+
+export const SESSION_COOKIE_AGE = 60 * 60 * 24 * 7;
+
+export const SESSION_COOKIE_EXP = 60 * 60 * 24 * 7 * 1000;
+

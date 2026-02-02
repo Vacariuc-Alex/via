@@ -1,39 +1,36 @@
 import {generateText} from "ai";
 import {groq} from "@ai-sdk/groq";
-import {getRandomInterviewCover} from "@/utils/utils";
-import {db} from "@/utils/firebase/admin";
+import {getRandomInterviewCover} from "@/commons/utils";
+import {db} from "@/integrations/firebase/admin";
+import {AI_MODEL, BUILD_PROMPT} from "@/commons/constants";
+import {DbTables} from "@/commons/enums";
 
 export async function POST(request: Request) {
     const {type, role, level, techstack, amount, userid} = await request.json();
     try{
         const {text: questions} = await generateText({
-            model: groq("openai/gpt-oss-20b"),
-            prompt: `
-                Prepare questions for a job interview.
-                The job role is ${role}.
-                The job experience level is ${level}.
-                The tech stack used in the job is: ${techstack}.
-                The focus between behavioural and technical questions should lean towards: ${type}.
-                The amount of questions required is: ${amount}.
-                Please return only the questions, without any additional text.
-                The questions are going to be read by ra voice assistant so do not use "/" or or "*" or any other special characters which might break the voice assistant reading.
-                Return the questions formatted like this:
-                ["Question l", "Question 2", "Question 3"]
-                Thank you!
-            `
+            model: groq(AI_MODEL),
+            prompt: BUILD_PROMPT({
+                role,
+                level,
+                techstack,
+                type,
+                amount,
+            }),
         });
+
         const interview = {
             role,
             type,
             level,
-            techstack: techstack.split(","),
+            techstack: techstack.split(",").map((t: string) => t.trim()).filter(Boolean),
             questions: JSON.parse(questions),
             userId: userid,
             finalized: true,
             coverImage: getRandomInterviewCover(),
             createdAt: new Date().toISOString()
         }
-        await db.collection('interviews').add(interview);
+        await db.collection(DbTables.INTERVIEWS).add(interview);
         return Response.json({success: true}, {status: 200});
     } catch (error) {
         console.error(error);

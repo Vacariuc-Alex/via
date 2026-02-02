@@ -1,9 +1,9 @@
-import dayjs from 'dayjs'
+import dayjs from "dayjs"
 import Image from "next/image";
-import {getRandomInterviewCover} from "@/utils/utils";
+import {getRandomInterviewCover} from "@/commons/utils";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import DisplayTechIcons from "@/components/DisplayTechIcons";
+import DisplayTechIcons from "@/components/InterviewCard/DisplayTechIcons";
 
 const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: InterviewCardProps) => {
     const feedback = null as Feedback | null;

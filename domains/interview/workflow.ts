@@ -1,4 +1,4 @@
-import {QuestionType} from "@/utils/constants";
+import {QuestionType} from "@/commons/enums";
 
 export type State =
     | { type: QuestionType.SAY; text: string }

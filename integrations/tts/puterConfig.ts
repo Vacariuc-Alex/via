@@ -1,4 +1,4 @@
-import {PUTER_CONFIG} from '@/utils/constants';
+import {VOICE_AGENT_PROPS} from '@/commons/constants';
 
 let isPuterReady = false;
 export async function load(): Promise<void> {
@@ -36,7 +36,7 @@ export async function speak(text: string): Promise<void> {
 
     const audio: HTMLAudioElement = await (window as any).puter.ai.txt2speech(
         text,
-        PUTER_CONFIG
+        VOICE_AGENT_PROPS
     );
 
     currentAudio = audio;

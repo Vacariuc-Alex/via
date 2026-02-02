@@ -2,8 +2,8 @@ import React from 'react'
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import {dummyInterviews} from "@/utils/constants";
-import InterviewCard from "@/components/InterviewCard";
+import {dummyInterviews} from "@/commons/constants";
+import InterviewCard from "@/components/InterviewCard/InterviewCard";
 
 const Page = () => {
     return (

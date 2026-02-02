@@ -1,9 +1,9 @@
-import {workflow} from '@/utils/interview/workflow';
-import {submitAnswersToAi} from '@/utils/interview/aiClient';
-import {getSpeechRecognition} from "@/utils/stt/speechRecognition";
-import {load, speak, stopSpeaking} from '@/utils/tts/puterConfig';
+import {workflow} from '@/domains/interview/workflow';
+import {submitAnswersToAi} from '@/integrations/gpt/client';
+import {getSpeechRecognition} from "@/integrations/stt/speechRecognition";
+import {load, speak, stopSpeaking} from '@/integrations/tts/puterConfig';
 import {createEventEmitter} from './eventEmitter';
-import {createStateMachine} from '@/utils/interview/stateMachine';
+import {createStateMachine} from '@/domains/interview/stateMachine';
 import {
     FINAL_ERROR_MESSAGE,
     MAX_ERROR_RETRIES,
@@ -11,10 +11,9 @@ import {
     TRANSCRIPT_MESSAGE_DELAY,
     UNDETECTED_AUDIO_ERROR_MESSAGES,
     UNRECOGNIZED_SPEECH_ERROR_MESSAGES,
-    InterviewEvent,
-    QuestionType,
     FINAL_WORKFLOW_MESSAGE
-} from '@/utils/constants';
+} from '@/commons/constants';
+import {InterviewEvent, QuestionType} from "@/commons/enums";
 
 export function createInterviewController(
     username: string,

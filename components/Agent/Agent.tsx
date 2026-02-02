@@ -2,10 +2,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createInterviewController } from '@/utils/interview/orchestration';
+import { createInterviewController } from '@/domains/interview/orchestrator';
 import Image from 'next/image';
-import { cn } from '@/utils/utils';
-import { InterviewEvent } from '@/utils/constants';
+import { cn } from '@/commons/utils';
+import { InterviewEvent } from '@/commons/enums';
 
 enum CallStatus {
     INACTIVE = "INACTIVE",

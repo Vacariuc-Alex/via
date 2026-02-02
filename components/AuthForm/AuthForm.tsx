@@ -3,18 +3,17 @@
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
 import {z} from "zod";
-
 import {Button} from "@/components/ui/button";
 import {Form} from "@/components/ui/form";
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import {toast} from "sonner";
-import FormField from "@/components/FormField";
+import FormField from "@/components/AuthForm/FormField";
 import {useRouter} from "next/navigation";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
-import {auth} from "@/utils/firebase/client";
-import {signIn, signUp} from "@/utils/auth/auth";
+import {auth} from "@/integrations/firebase/client";
+import {signIn, signUp} from "@/integrations/auth/auth";
 
 const authFormSchema = (type: FormType) => {
     return z.object({
@@ -35,10 +34,11 @@ const AuthForm = ({type}: { type: FormType }) => {
             password: ""
         },
     });
+    const isSignIn = type === "sign-in";
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            if (type === "sign-in") {
+            if (isSignIn) {
                 const {email, password} = values;
                 const userCredentials = await signInWithEmailAndPassword(auth, email, password);
                 const idToken = await userCredentials.user.getIdToken();
@@ -74,7 +74,6 @@ const AuthForm = ({type}: { type: FormType }) => {
         }
     }
 
-    const isSignIn = type === "sign-in";
     return (
         <div className="card-border lg:min-w-[566px]">
             <div className="flex flex-col gap-6 card py-14 px-10">
