@@ -13,17 +13,18 @@ import FormField from "@/components/AuthForm/FormField";
 import {useRouter} from "next/navigation";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "@/integrations/firebase/client";
-import {signIn, signUp} from "@/integrations/auth/auth";
+import {signIn, signUp} from "@/features/service/auth";
+import {FormType, FormTypeParams, SIGN_IN, SIGN_UP} from "@/commons/types";
 
 const authFormSchema = (type: FormType) => {
     return z.object({
-        name: (type === "sign-up") ? z.string().min(3) : z.string().optional(),
+        name: (type === SIGN_UP) ? z.string().min(3) : z.string().optional(),
         email: z.email(),
         password: z.string().min(3),
     });
 }
 
-const AuthForm = ({type}: { type: FormType }) => {
+const AuthForm = ({type}: FormTypeParams) => {
     const router = useRouter();
     const formSchema = authFormSchema(type);
     const form = useForm<z.infer<typeof formSchema>>({
@@ -34,7 +35,7 @@ const AuthForm = ({type}: { type: FormType }) => {
             password: ""
         },
     });
-    const isSignIn = type === "sign-in";
+    const isSignIn = type === SIGN_IN;
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -98,4 +99,5 @@ const AuthForm = ({type}: { type: FormType }) => {
         </div>
     );
 }
-export default AuthForm
+
+export default AuthForm;

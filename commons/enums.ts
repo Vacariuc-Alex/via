@@ -16,3 +16,10 @@ export const enum DbTables {
     INTERVIEWS = "interviews",
     USERS = "users"
 };
+
+export const enum CallStatus {
+    INACTIVE = "INACTIVE",
+    CONNECTING = "CONNECTING",
+    ACTIVE = "ACTIVE",
+    FINISHED = "FINISHED",
+}

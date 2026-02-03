@@ -1,9 +1,9 @@
-import {workflow} from '@/domains/interview/workflow';
+import {workflow} from '@/features/interview/workflow';
 import {submitAnswersToAi} from '@/integrations/gpt/client';
 import {getSpeechRecognition} from "@/integrations/stt/speechRecognition";
 import {load, speak, stopSpeaking} from '@/integrations/tts/puterConfig';
 import {createEventEmitter} from './eventEmitter';
-import {createStateMachine} from '@/domains/interview/stateMachine';
+import {createStateMachine} from '@/features/interview/stateMachine';
 import {
     FINAL_ERROR_MESSAGE,
     MAX_ERROR_RETRIES,
@@ -14,6 +14,13 @@ import {
     FINAL_WORKFLOW_MESSAGE
 } from '@/commons/constants';
 import {InterviewEvent, QuestionType} from "@/commons/enums";
+import {
+    MESSAGE_ROLE_ASSISTANT,
+    MESSAGE_ROLE_USER,
+    MESSAGE_TRANSCRIPT_TYPE,
+    MESSAGE_TYPE,
+    MessageEmitter
+} from "@/commons/types";
 
 export function createInterviewController(
     username: string,
@@ -57,11 +64,11 @@ export function createInterviewController(
                 countUndetectedAudioRetries = 0;
 
                 eventEmitter.emit(InterviewEvent.MESSAGE, {
-                    type: "transcript",
-                    transcriptType: "final",
-                    role: "user",
+                    type: MESSAGE_TYPE,
+                    transcriptType: MESSAGE_TRANSCRIPT_TYPE,
+                    role: MESSAGE_ROLE_USER,
                     content: lastTranscript,
-                });
+                } as MessageEmitter);
 
                 await handleNextState(lastTranscript);
                 return;
@@ -147,11 +154,11 @@ export function createInterviewController(
 
         transcriptMessageTimeout = setTimeout(() => {
             eventEmitter.emit(InterviewEvent.MESSAGE, {
-                type: "transcript",
-                transcriptType: "final",
-                role: "assistant",
+                type: MESSAGE_TYPE,
+                transcriptType: MESSAGE_TRANSCRIPT_TYPE,
+                role: MESSAGE_ROLE_ASSISTANT,
                 content: text,
-            });
+            } as MessageEmitter);
 
             transcriptMessageTimeout = null;
         }, TRANSCRIPT_MESSAGE_DELAY);

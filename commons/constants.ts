@@ -1,6 +1,8 @@
 // import { CreateAssistantDTO } from "@ai-ai/web/dist/api";
 // import { z } from "zod";
 
+import {InterviewGenerationPromptParams} from "@/commons/types";
+
 export const TECHSTACK_NORMALIZED_NAMES = {
   "react.js": "react",
   reactjs: "react",
@@ -268,31 +270,6 @@ export const INTERVIEW_COVERS = [
   "/yahoo.png",
 ];
 
-export const dummyInterviews: Interview[] = [
-  {
-    id: "1",
-    userId: "user1",
-    role: "Frontend Developer",
-    type: "Technical",
-    techstack: ["React", "TypeScript", "Next.js", "Tailwind CSS"],
-    level: "Junior",
-    questions: ["What is React?"],
-    finalized: false,
-    createdAt: "2024-03-15T10:00:00Z",
-  },
-  {
-    id: "2",
-    userId: "user1",
-    role: "Full Stack Developer",
-    type: "Mixed",
-    techstack: ["Node.js", "Express", "MongoDB", "React"],
-    level: "Senior",
-    questions: ["What is Node.js?"],
-    finalized: false,
-    createdAt: "2024-03-14T15:30:00Z",
-  },
-];
-
 export const VOICE_AGENT_PROPS = {
   provider: 'elevenlabs',
   voice: 'Xb7hH8MSUJpSbSDYk0k2',
@@ -323,13 +300,7 @@ export const MAX_ERROR_RETRIES = 3;
 
 export const AI_MODEL = "openai/gpt-oss-20b";
 
-export const BUILD_PROMPT = (params: {
-  role: string;
-  level: string;
-  techstack: string;
-  type: string;
-  amount: number;
-}) => `
+export const BUILD_PROMPT = (params: InterviewGenerationPromptParams) => `
   Prepare questions for a job interview.
   The job role is ${params.role}.
   The job experience level is ${params.level}.
@@ -349,3 +320,4 @@ export const SESSION_COOKIE_AGE = 60 * 60 * 24 * 7;
 
 export const SESSION_COOKIE_EXP = 60 * 60 * 24 * 7 * 1000;
 
+export const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";

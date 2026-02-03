@@ -1,5 +1,5 @@
-import {State} from '@/domains/interview/workflow';
 import {QuestionType} from "@/commons/enums";
+import {State} from "@/commons/types";
 
 export function createStateMachine(workflow: State[]) {
     let index = 0;

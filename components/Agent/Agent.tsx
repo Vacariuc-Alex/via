@@ -1,29 +1,12 @@
-"use client";
+"use client"
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createInterviewController } from '@/domains/interview/orchestrator';
+import { createInterviewController } from '@/features/interview/orchestrator';
 import Image from 'next/image';
 import { cn } from '@/commons/utils';
-import { InterviewEvent } from '@/commons/enums';
-
-enum CallStatus {
-    INACTIVE = "INACTIVE",
-    CONNECTING = "CONNECTING",
-    ACTIVE = "ACTIVE",
-    FINISHED = "FINISHED",
-}
-
-interface SavedMessage {
-    role: "user" | "assistant" | "system";
-    content: string;
-}
-
-interface AgentProps {
-    userName: string;
-    userId: string;
-    type: string;
-}
+import {CallStatus, InterviewEvent} from '@/commons/enums';
+import {AgentProps, MESSAGE_TRANSCRIPT_TYPE, MESSAGE_TYPE, SavedMessage} from "@/commons/types";
 
 export default function Agent({ userName, userId }: AgentProps) {
     const router = useRouter();
@@ -50,7 +33,7 @@ export default function Agent({ userName, userId }: AgentProps) {
         const onSpeechStart = () => setIsSpeaking(true);
         const onSpeechEnd = () => setIsSpeaking(false);
         const onMessage = (message: any) => {
-            if (message.type !== "transcript" || message.transcriptType !== "final") return;
+            if (message.type !== MESSAGE_TYPE || message.transcriptType !== MESSAGE_TRANSCRIPT_TYPE) return;
             setMessage({
                 role: message.role,
                 content: message.content,

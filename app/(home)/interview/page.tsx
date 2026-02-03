@@ -1,6 +1,6 @@
 import React from 'react'
 import Agent from "@/components/Agent/Agent";
-import {getCurrentUser} from "@/integrations/auth/auth";
+import {getCurrentUser} from "@/features/service/auth";
 
 const Page = async () => {
     const user = await getCurrentUser();
@@ -15,4 +15,5 @@ const Page = async () => {
         </>
     )
 }
+
 export default Page;

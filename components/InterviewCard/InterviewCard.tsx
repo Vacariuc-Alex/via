@@ -4,11 +4,14 @@ import {getRandomInterviewCover} from "@/commons/utils";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "@/components/InterviewCard/DisplayTechIcons";
+import {DATE_TIME_FORMAT} from "@/commons/constants";
+import {Feedback, InterviewCardProps} from "@/commons/types";
 
-const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: InterviewCardProps) => {
+const InterviewCard = ({id: interviewId, role, type, techstack, coverImage, createdAt}: InterviewCardProps) => {
     const feedback = null as Feedback | null;
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
-    const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format('YYYY-MM-DD HH:mm:ss')
+    const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format(DATE_TIME_FORMAT);
+
     return (
         <div className="card-border w-[360px] max-sm:w-full min-h-96">
             <div className="card-interview">
@@ -16,7 +19,7 @@ const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: 
                     <div className="absolute top-0 right-0 w-fit px-4 py-2 ruounded-bl-md rounded-bl-lg bg-light-600">
                         <p className="badge-text">{normalizedType}</p>
                     </div>
-                    <Image src={getRandomInterviewCover()} alt="cover image" width={900} height={90} className="rounded-full object-fit size-[90px]"/>
+                    <Image src={coverImage} alt="cover image" width={900} height={90} className="rounded-full object-fit size-[90px]"/>
                     <h3 className="mt-5 capitalize">
                         {role} Interview
                     </h3>
@@ -46,4 +49,5 @@ const InterviewCard = ({interviewId, userId, role, type, techstack, createdAt}: 
         </div>
     );
 }
-export default InterviewCard
+
+export default InterviewCard;

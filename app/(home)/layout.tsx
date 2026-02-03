@@ -1,11 +1,12 @@
 import {ReactNode} from 'react'
 import Link from "next/link";
 import Image from "next/image";
-import {isAuthenticated} from "@/integrations/auth/auth";
+import {isAuthenticated} from "@/features/service/auth";
 import {redirect} from "next/navigation";
 
 const HomeLayout = async ({children}: {children: ReactNode}) => {
     const isUserAuthenticated = await isAuthenticated();
+
     if(!isUserAuthenticated) {
         redirect('/sign-in');
     }
