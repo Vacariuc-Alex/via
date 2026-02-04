@@ -14,11 +14,12 @@ import {useRouter} from "next/navigation";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "@/integrations/firebase/client";
 import {signIn, signUp} from "@/features/service/auth";
-import {FormType, FormTypeParams, SIGN_IN, SIGN_UP} from "@/commons/types";
+import {FormTypeParams} from "@/commons/types";
+import {AuthStatus} from "@/commons/enums";
 
-const authFormSchema = (type: FormType) => {
+const authFormSchema = (type: AuthStatus) => {
     return z.object({
-        name: (type === SIGN_UP) ? z.string().min(3) : z.string().optional(),
+        name: (type === AuthStatus.SIGN_UP) ? z.string().min(3) : z.string().optional(),
         email: z.email(),
         password: z.string().min(3),
     });
@@ -35,7 +36,7 @@ const AuthForm = ({type}: FormTypeParams) => {
             password: ""
         },
     });
-    const isSignIn = type === SIGN_IN;
+    const isSignIn = type === AuthStatus.SIGN_IN;
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -54,10 +55,11 @@ const AuthForm = ({type}: FormTypeParams) => {
                 const {name, email, password} = values;
                 const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
                 const result = await signUp({
-                    uid: userCredentials.user.uid,
-                    name: name!,
+                    userId: userCredentials.user.uid,
+                    username: name!,
                     email,
-                    password});
+                    password
+                });
                 if (!result?.success) {
                     toast.error(result?.message);
                     return;

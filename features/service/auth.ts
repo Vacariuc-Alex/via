@@ -2,16 +2,16 @@
 
 import {auth, db} from "@/integrations/firebase/admin";
 import {cookies} from "next/dist/server/request/cookies";
-import {DbTables} from "@/commons/enums";
+import {DbDoc} from "@/commons/enums";
 import {SESSION_COOKIE_AGE, SESSION_COOKIE_EXP, SESSION_COOKIE_NAME} from "@/commons/constants";
-import {SignInParams, SignUpParams, User, UserDbTable} from "@/commons/types";
+import {SignInParams, SignUpParams, UserDoc} from "@/commons/types";
 
 export async function signUp(params: SignUpParams) {
-    const { uid, name, email } = params;
+    const { userId, username, email } = params;
 
     try {
-        const userRecord = await db.collection(DbTables.USERS)
-            .doc(uid)
+        const userRecord = await db.collection(DbDoc.USERS)
+            .doc(userId)
             .get();
 
         if(userRecord.exists){
@@ -21,9 +21,9 @@ export async function signUp(params: SignUpParams) {
             }
         }
 
-        await db.collection(DbTables.USERS)
-            .doc(uid)
-            .set({name, email} as UserDbTable);
+        await db.collection(DbDoc.USERS)
+            .doc(userId)
+            .set({username: username, email} satisfies UserDoc);
 
         return {
             success: true,
@@ -81,7 +81,7 @@ export async function setSessionCookie(idToken: string) {
     });
 }
 
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<UserDoc | null> {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
@@ -91,7 +91,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
     try {
         const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
-        const userRecord = await db.collection(DbTables.USERS)
+        const userRecord = await db.collection(DbDoc.USERS)
             .doc(decodedClaims.uid)
             .get();
 
@@ -102,7 +102,7 @@ export async function getCurrentUser(): Promise<User | null> {
         return {
             ... userRecord.data(),
             id: userRecord.id
-        } as User;
+        } as UserDoc;
     } catch (e) {
         console.log(e);
         return null;

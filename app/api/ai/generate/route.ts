@@ -2,44 +2,47 @@ import {generateText} from "ai";
 import {groq} from "@ai-sdk/groq";
 import {getRandomInterviewCover} from "@/commons/utils";
 import {db} from "@/integrations/firebase/admin";
-import {AI_MODEL, BUILD_PROMPT} from "@/commons/constants";
-import {DbTables} from "@/commons/enums";
-import {InterviewDbTable} from "@/commons/types";
+import {AI_MODEL, INTERVIEW_GENERATION_PROMPT} from "@/commons/constants";
+import {DbDoc} from "@/commons/enums";
+import {InterviewDoc, InterviewGenerationPayload, InterviewGenerationPromptParams} from "@/commons/types";
 
 export async function POST(request: Request) {
-    const {type, role, level, techstack, amount, userid} = await request.json();
+    const {type, role, level, techstack, amount, userId}: InterviewGenerationPayload = await request.json();
 
     try{
-        const {text: questions} = await generateText({
+        const {text} = await generateText({
             model: groq(AI_MODEL),
-            prompt: BUILD_PROMPT({
+            prompt: INTERVIEW_GENERATION_PROMPT({
                 role,
                 level,
                 techstack,
                 type,
-                amount,
-            }),
+                amount
+            } satisfies InterviewGenerationPromptParams)
         });
 
-        const interview = {
+        const parsed = JSON.parse(text) as { questions: string[]; technologies: string[] };
+        const parsedQuestions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+        const parsedTechnologies = Array.isArray(parsed?.technologies) ? parsed.technologies : [];
+
+        const interviewDoc = {
             role,
             type,
             level,
-            techstack: techstack.split(",")
-                .map((t: string) => t.trim())
-                .filter(Boolean),
-            questions: JSON.parse(questions),
+            techstack,
+            technologies: parsedTechnologies,
+            questions: parsedQuestions,
             finalized: true,
             coverImage: getRandomInterviewCover(),
             createdAt: new Date().toISOString(),
-            userId: userid,
-        } as InterviewDbTable;
+            userId
+        } satisfies InterviewDoc;
 
-        await db.collection(DbTables.INTERVIEWS).add(interview);
+        await db.collection(DbDoc.INTERVIEWS).add(interviewDoc);
 
         return Response.json({success: true}, {status: 200});
     } catch (error) {
         console.error(error);
-        return Response.json({success: false, error}, {status: 500});
+        return Response.json({success: false, error: "Failed to generate the interview"}, {status: 500});
     }
 }

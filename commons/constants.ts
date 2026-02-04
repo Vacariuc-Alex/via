@@ -1,7 +1,5 @@
-// import { CreateAssistantDTO } from "@ai-ai/web/dist/api";
-// import { z } from "zod";
-
-import {InterviewGenerationPromptParams} from "@/commons/types";
+//import { z } from "zod";
+import {InterviewFeedbackPromptParams, InterviewGenerationPromptParams} from "@/commons/types";
 
 export const TECHSTACK_NORMALIZED_NAMES = {
   "react.js": "react",
@@ -91,7 +89,7 @@ export const TECHSTACK_NORMALIZED_NAMES = {
   fastapi: "fastapi",
   java: "java",
   spring: "spring",
-  springboot: "spring",
+  "spring boot": "spring",
   kotlin: "kotlin",
   scala: "scala",
   groovy: "groovy",
@@ -163,97 +161,39 @@ export const TECHSTACK_NORMALIZED_NAMES = {
   amplify: "amplify"
 };
 
-// export const interviewer: CreateAssistantDTO = {
-//   name: "Interviewer",
-//   firstMessage:
-//     "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
-//   transcriber: {
-//     provider: "deepgram",
-//     model: "nova-2",
-//     language: "en",
-//   },
-//   voice: {
-//     provider: "11labs",
-//     voiceId: "sarah",
-//     stability: 0.4,
-//     similarityBoost: 0.8,
-//     speed: 0.9,
-//     style: 0.5,
-//     useSpeakerBoost: true,
-//   },
-//   model: {
-//     provider: "openai",
-//     model: "gpt-4",
-//     messages: [
-//       {
-//         role: "system",
-//         content: `You are a professional job interviewer conducting a real-time voice interview with a candidate. Your goal is to assess their qualifications, motivation, and fit for the role.
-
-// Interview Guidelines:
-// Follow the structured question flow:
-// {{questions}}
-
-// Engage naturally & react appropriately:
-// Listen actively to responses and acknowledge them before moving forward.
-// Ask brief follow-up questions if a response is vague or requires more detail.
-// Keep the conversation flowing smoothly while maintaining control.
-// Be professional, yet warm and welcoming:
-
-// Use official yet friendly language.
-// Keep responses concise and to the point (like in a real voice interview).
-// Avoid robotic phrasing—sound natural and conversational.
-// Answer the candidate’s questions professionally:
-
-// If asked about the role, company, or expectations, provide a clear and relevant answer.
-// If unsure, redirect the candidate to HR for more details.
-
-// Conclude the interview properly:
-// Thank the candidate for their time.
-// Inform them that the company will reach out soon with feedback.
-// End the conversation on a polite and positive note.
-
-
-// - Be sure to be professional and polite.
-// - Keep all your responses short and simple. Use official language, but be kind and welcoming.
-// - This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`,
-//       },
-//     ],
-//   },
-// };
-
-// export const feedbackSchema = z.object({
-//   totalScore: z.number(),
-//   categoryScores: z.tuple([
-//     z.object({
-//       name: z.literal("Communication Skills"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Technical Knowledge"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Problem Solving"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Cultural Fit"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//     z.object({
-//       name: z.literal("Confidence and Clarity"),
-//       score: z.number(),
-//       comment: z.string(),
-//     }),
-//   ]),
-//   strengths: z.array(z.string()),
-//   areasForImprovement: z.array(z.string()),
-//   finalAssessment: z.string(),
-// });
+/*export const feedbackSchema = z.object({
+  totalScore: z.number(),
+  categoryScores: z.tuple([
+    z.object({
+      name: z.literal("Communication Skills"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Technical Knowledge"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Problem Solving"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Cultural Fit"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+    z.object({
+      name: z.literal("Confidence and Clarity"),
+      score: z.number(),
+      comment: z.string(),
+    }),
+  ]),
+  strengths: z.array(z.string()),
+  areasForImprovement: z.array(z.string()),
+  finalAssessment: z.string(),
+});*/
 
 export const INTERVIEW_COVERS = [
   "/adobe.png",
@@ -290,7 +230,9 @@ export const UNDETECTED_AUDIO_ERROR_MESSAGES = [
 
 export const FINAL_ERROR_MESSAGE = "It looks like there are connection issues. Unfortunately, we need to end this call.";
 
-export const FINAL_WORKFLOW_MESSAGE = "Thank you for your answers, the interview will be generated in a couple of seconds!";
+export const FINAL_GENERATE_WORKFLOW_MESSAGE = "Thank you for your answers, the interview will be generated in a couple of seconds!";
+
+export const FINAL_INTERVIEW_WORKFLOW_MESSAGE = "Thank you for your time and discussion, we'll carefully analyze your responses and come with a feedback as soon as possible. Thank You!";
 
 export const TRANSCRIPT_MESSAGE_DELAY = 3000;
 
@@ -300,18 +242,53 @@ export const MAX_ERROR_RETRIES = 3;
 
 export const AI_MODEL = "openai/gpt-oss-20b";
 
-export const BUILD_PROMPT = (params: InterviewGenerationPromptParams) => `
+export const INTERVIEW_GENERATION_PROMPT = (params: InterviewGenerationPromptParams) => `
   Prepare questions for a job interview.
   The job role is ${params.role}.
   The job experience level is ${params.level}.
-  The tech stack used in the job is: ${params.techstack}.
+  The user described the tech stack in natural language as: ${params.techstack}.
   The focus between behavioural and technical questions should lean towards: ${params.type}.
   The amount of questions required is: ${params.amount}.
-  Please return only the questions, without any additional text.
-  The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant reading.
-  Return the questions formatted like this:
-  ["Question 1", "Question 2", "Question 3"]
-  Thank you!
+
+  Your task:
+  1) Extract only the technology names that the user mentioned (ignore all filler/noise words).
+  2) Generate interview questions aligned to the extracted technologies.
+
+  Output requirements:
+  - Return ONLY valid JSON.
+  - No markdown, no code fences, no extra text.
+  - JSON shape must be exactly:
+    {"questions": ["Question 1", "Question 2"], "technologies": ["java", "spring boot", "sql"]}
+
+  Additional constraints:
+  - The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant reading.
+`;
+
+export const INTERVIEW_FEEDBACK_PROMPT = (params: InterviewFeedbackPromptParams) => `
+  You are an expert technical interviewer and career coach!
+  Context about this interview:
+    - Role: ${params.role}
+    - Level: ${params.level}
+    - Tech stack: ${params.technologies}
+
+  Below is the interview transcript as question/answer pairs:
+    --- TRANSCRIPT START ---
+    ${params.transcript}
+    --- TRANSCRIPT END ---
+
+  Task: Provide concise, actionable feedback tailored to the role/level/type/tech stack above.
+
+  Return your answer in plain text with the following sections (keep the headings):
+    1) Overall assessment (2-4 sentences)
+    2) Score (0-100)
+    3) Strengths (3-6 bullet points)
+    4) Areas to improve (3-6 bullet points)
+    5) Suggested follow-up questions (3-5 questions specific to the role/tech stack)
+
+  Rules:
+    - Base feedback only on the transcript.
+    - If information is missing, say what’s missing and how it impacted the evaluation.
+    - Be professional, direct, and constructive.
 `;
 
 export const SESSION_COOKIE_NAME = "session";

@@ -1,9 +1,9 @@
-import {workflow} from '@/features/interview/workflow';
-import {submitAnswersToAi} from '@/integrations/gpt/client';
+import {generateInterviewWorkflow, ongoingInterviewWorkflow} from '@/features/agent/workflows';
+import {submitGenerateAnswersToAi, submitInterviewAnswersToAi} from '@/integrations/gpt/client';
 import {getSpeechRecognition} from "@/integrations/stt/speechRecognition";
 import {load, speak, stopSpeaking} from '@/integrations/tts/puterConfig';
 import {createEventEmitter} from './eventEmitter';
-import {createStateMachine} from '@/features/interview/stateMachine';
+import {createStateMachine} from '@/features/agent/stateMachine';
 import {
     FINAL_ERROR_MESSAGE,
     MAX_ERROR_RETRIES,
@@ -11,37 +11,49 @@ import {
     TRANSCRIPT_MESSAGE_DELAY,
     UNDETECTED_AUDIO_ERROR_MESSAGES,
     UNRECOGNIZED_SPEECH_ERROR_MESSAGES,
-    FINAL_WORKFLOW_MESSAGE
+    FINAL_GENERATE_WORKFLOW_MESSAGE, FINAL_INTERVIEW_WORKFLOW_MESSAGE
 } from '@/commons/constants';
-import {InterviewEvent, QuestionType} from "@/commons/enums";
+import {AgentMode, InterviewEvent, QuestionType, TranscriptMessage} from "@/commons/enums";
 import {
-    MESSAGE_ROLE_ASSISTANT,
-    MESSAGE_ROLE_USER,
-    MESSAGE_TRANSCRIPT_TYPE,
-    MESSAGE_TYPE,
-    MessageEmitter
+    AgentParams, InterviewDoc, InterviewDialogPayload, InterviewGenerationPayload,
+    TranscriptMessageEmitter
 } from "@/commons/types";
 
 export function createInterviewController(
     username: string,
-    userid: string
+    userId: string
 ) {
     const eventEmitter = createEventEmitter();
 
     let speechRecognition: any;
     let stateMachine: any;
-    let transcript = "";
-    let isStateMachineStopped = false;
+    let transcript: string = "";
+    let isStateMachineStopped: boolean = false;
     let transcriptMessageTimeout: ReturnType<typeof setTimeout> | null = null;
-    let hadPreviousAudioSpeechError = false;
-    let countUnrecognizedSpeechRetries = 0;
-    let countUndetectedAudioRetries = 0;
+    let hadPreviousAudioSpeechError: boolean = false;
+    let countUnrecognizedSpeechRetries: number = 0;
+    let countUndetectedAudioRetries: number = 0;
+    let agentMode: AgentMode | null = null;
+    let thisInterview: InterviewDoc | null = null;
 
-    async function start() {
+    async function start({interview, mode}: AgentParams) {
         await load();
 
+        thisInterview = thisInterview = interview ?? null;
+        agentMode = mode satisfies AgentMode;
         speechRecognition = getSpeechRecognition();
-        stateMachine = createStateMachine(workflow(username));
+
+        let workflow;
+        if(mode === AgentMode.GENERATE){
+            workflow = generateInterviewWorkflow(username);
+            stateMachine = createStateMachine(workflow, mode);
+        } else if (mode === AgentMode.INTERVIEW && interview?.questions?.length) {
+            workflow = ongoingInterviewWorkflow(username, interview.questions);
+            stateMachine = createStateMachine(workflow, mode);
+        } else {
+            stop();
+            return;
+        }
 
         speechRecognition.onresult = (event: any) => {
             transcript = event.results[0][0].transcript;
@@ -56,7 +68,7 @@ export function createInterviewController(
             }
 
             // CASE: speech was recognized
-            if (transcript && transcript.trim().length > 0) {
+            if (transcript?.trim().length > 0) {
                 const lastTranscript = transcript.trim();
 
                 transcript = "";
@@ -64,11 +76,11 @@ export function createInterviewController(
                 countUndetectedAudioRetries = 0;
 
                 eventEmitter.emit(InterviewEvent.MESSAGE, {
-                    type: MESSAGE_TYPE,
-                    transcriptType: MESSAGE_TRANSCRIPT_TYPE,
-                    role: MESSAGE_ROLE_USER,
-                    content: lastTranscript,
-                } as MessageEmitter);
+                    type: TranscriptMessage.TYPE,
+                    transcriptType: TranscriptMessage.TRANSCRIPT_TYPE,
+                    role: TranscriptMessage.ROLE_USER,
+                    content: lastTranscript
+                } satisfies TranscriptMessageEmitter);
 
                 await handleNextState(lastTranscript);
                 return;
@@ -116,7 +128,7 @@ export function createInterviewController(
             if (!isStateMachineStopped) eventEmitter.emit(InterviewEvent.CALL_START);
         });
 
-        await handleCurrentState(stateMachine.current());
+        await handleCurrentState(stateMachine.current(), agentMode!);
     }
 
     function stop() {
@@ -126,6 +138,7 @@ export function createInterviewController(
         transcript = "";
         countUnrecognizedSpeechRetries = 0;
         countUndetectedAudioRetries = 0;
+        agentMode = null;
 
         stopSpeaking();
 
@@ -154,11 +167,11 @@ export function createInterviewController(
 
         transcriptMessageTimeout = setTimeout(() => {
             eventEmitter.emit(InterviewEvent.MESSAGE, {
-                type: MESSAGE_TYPE,
-                transcriptType: MESSAGE_TRANSCRIPT_TYPE,
-                role: MESSAGE_ROLE_ASSISTANT,
-                content: text,
-            } as MessageEmitter);
+                type: TranscriptMessage.TYPE,
+                transcriptType: TranscriptMessage.TRANSCRIPT_TYPE,
+                role: TranscriptMessage.ROLE_ASSISTANT,
+                content: text
+            } satisfies TranscriptMessageEmitter);
 
             transcriptMessageTimeout = null;
         }, TRANSCRIPT_MESSAGE_DELAY);
@@ -166,10 +179,14 @@ export function createInterviewController(
 
     async function handleNextState(transcript?: string) {
         const nextState = stateMachine.next(transcript);
-        await handleCurrentState(nextState);
+        if(!agentMode) {
+            stop();
+            return;
+        }
+        await handleCurrentState(nextState, agentMode);
     }
 
-    async function handleCurrentState(state: any) {
+    async function handleCurrentState(state: any, mode: AgentMode) {
         if (!state || isStateMachineStopped) return;
 
         if (state.type === QuestionType.SAY) {
@@ -194,13 +211,36 @@ export function createInterviewController(
 
         if (state.type === QuestionType.END) {
             eventEmitter.emit(InterviewEvent.SPEECH_START);
-            emitTranscriptMessage(FINAL_WORKFLOW_MESSAGE);
-            await speak(FINAL_WORKFLOW_MESSAGE);
-            eventEmitter.emit(InterviewEvent.SPEECH_END);
-            await submitAnswersToAi({
-                ...stateMachine.answers,
-                userid
-            });
+
+            if(mode === AgentMode.GENERATE){
+                emitTranscriptMessage(FINAL_GENERATE_WORKFLOW_MESSAGE);
+                await speak(FINAL_GENERATE_WORKFLOW_MESSAGE);
+                eventEmitter.emit(InterviewEvent.SPEECH_END);
+                await submitGenerateAnswersToAi({
+                    ...stateMachine.answers,
+                    userId
+                } satisfies InterviewGenerationPayload);
+            } else if (mode === AgentMode.INTERVIEW) {
+                emitTranscriptMessage(FINAL_INTERVIEW_WORKFLOW_MESSAGE);
+                await speak(FINAL_INTERVIEW_WORKFLOW_MESSAGE);
+                eventEmitter.emit(InterviewEvent.SPEECH_END);
+
+                if(!thisInterview?.id) {
+                    stop();
+                    return;
+                }
+
+                await submitInterviewAnswersToAi({
+                    userId,
+                    interviewId: thisInterview.id ?? "",
+                    qa: stateMachine.interviewQaPairs,
+                    role: thisInterview.role,
+                    level: thisInterview.level,
+                    type: thisInterview.type,
+                    technologies: thisInterview.technologies,
+                } satisfies InterviewDialogPayload);
+            }
+
             eventEmitter.emit(InterviewEvent.CALL_END);
         }
     }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import InterviewCard from "@/components/InterviewCard/InterviewCard";
 import {getCurrentUser} from "@/features/service/auth";
-import {getInterviewsByUserId, getLatestInterviewsByOtherUsers} from "@/features/service/interviewGeneration";
+import {getInterviewsByUserId, getLatestInterviewsByOtherUsers} from "@/features/service/interview";
 
 const Page = async () => {
     const user = await getCurrentUser();

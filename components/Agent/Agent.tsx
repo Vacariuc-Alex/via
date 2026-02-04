@@ -1,31 +1,56 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createInterviewController } from '@/features/interview/orchestrator';
+import React, {useEffect, useRef, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {createInterviewController} from '@/features/agent/orchestrator';
 import Image from 'next/image';
-import { cn } from '@/commons/utils';
-import {CallStatus, InterviewEvent} from '@/commons/enums';
-import {AgentProps, MESSAGE_TRANSCRIPT_TYPE, MESSAGE_TYPE, SavedMessage} from "@/commons/types";
+import {cn} from '@/commons/utils';
+import {AgentMode, CallStatus, InterviewEvent, TranscriptMessage} from '@/commons/enums';
+import {AgentProps, SavedTranscribedMessage} from "@/commons/types";
 
-export default function Agent({ userName, userId }: AgentProps) {
+export default function Agent({username, userId, interview, mode}: AgentProps) {
     const router = useRouter();
     const controllerRef = useRef<ReturnType<typeof createInterviewController> | null>(null);
 
-    const [callStatus, setCallStatus] = useState(CallStatus.INACTIVE);
-    const [isSpeaking, setIsSpeaking] = useState(false);
-    const [message, setMessage] = useState<SavedMessage | null>(null);
+    const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+    const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+    const [messages, setMessages] = useState<SavedTranscribedMessage[]>([]);
+    const [isForcedDisconnect, setIsForcedDisconnect] = useState<boolean>(false);
+
+    const lastMessage = messages.length ? messages[messages.length - 1] : null;
 
     useEffect(() => {
         if (callStatus === CallStatus.FINISHED) {
-            router.push('/');
+            if(interview?.id && mode === AgentMode.INTERVIEW && !isForcedDisconnect) {
+                handleFeedbackGeneration(interview.id, messages);
+            } else {
+                router.push('/');
+            }
         }
     }, [callStatus]);
 
+    //ToDo: This is a dummy function for now!
+    const handleFeedbackGeneration = (interviewId: string, messages: SavedTranscribedMessage[])=>{
+        console.log('Generating feedback...');
+
+        const {success, id} = {
+            success: true,
+            id: "new-interview-id"
+        };
+
+        if(success && id) {
+            router.push(`${interviewId}/feedback`);
+        } else {
+            console.log('Error saving feedback...');
+            router.push('/');
+        }
+    }
+
     function handleCall() {
         setCallStatus(CallStatus.CONNECTING);
+        setMessages([]);
 
-        const controller = createInterviewController(userName, userId);
+        const controller = createInterviewController(username, userId);
         controllerRef.current = controller;
 
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
@@ -33,11 +58,14 @@ export default function Agent({ userName, userId }: AgentProps) {
         const onSpeechStart = () => setIsSpeaking(true);
         const onSpeechEnd = () => setIsSpeaking(false);
         const onMessage = (message: any) => {
-            if (message.type !== MESSAGE_TYPE || message.transcriptType !== MESSAGE_TRANSCRIPT_TYPE) return;
-            setMessage({
-                role: message.role,
-                content: message.content,
-            });
+            if (message.type !== TranscriptMessage.TYPE || message.transcriptType !== TranscriptMessage.TRANSCRIPT_TYPE) return;
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: message.role,
+                    content: message.content,
+                } satisfies SavedTranscribedMessage,
+            ]);
         };
 
         controller.on(InterviewEvent.CALL_START, onCallStart);
@@ -45,13 +73,19 @@ export default function Agent({ userName, userId }: AgentProps) {
         controller.on(InterviewEvent.SPEECH_START, onSpeechStart);
         controller.on(InterviewEvent.SPEECH_END, onSpeechEnd);
         controller.on(InterviewEvent.MESSAGE, onMessage);
-        controller.start();
+
+        if(mode === AgentMode.GENERATE) {
+            controller.start({mode});
+        } else if(mode === AgentMode.INTERVIEW  && interview) {
+            controller.start({interview, mode});
+        }
     }
 
     function handleDisconnect() {
         controllerRef.current?.stop();
         controllerRef.current = null;
         setCallStatus(CallStatus.FINISHED);
+        setIsForcedDisconnect(true);
     }
 
     return (
@@ -67,15 +101,15 @@ export default function Agent({ userName, userId }: AgentProps) {
                 <div className="card-border">
                     <div className="card-content">
                         <Image src="/user-avatar.png" alt="user avatar" width={540} height={540} className="rounded-full object-cover size-[120px]" />
-                        <h3>{userName}</h3>
+                        <h3>{username}</h3>
                     </div>
                 </div>
             </div>
-            {message && (
+            {lastMessage && (
                 <div className="transcript-border">
                     <div className="transcript">
-                        <p key={message.content} className={cn("transition-opacity duration-500 opacity-0", "animate-fadeIn opacity-100")}>
-                            {message.content}
+                        <p key={lastMessage.content} className={cn("transition-opacity duration-500 opacity-0", "animate-fadeIn opacity-100")}>
+                            {lastMessage.content}
                         </p>
                     </div>
                 </div>

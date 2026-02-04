@@ -1,15 +1,16 @@
 import dayjs from "dayjs"
 import Image from "next/image";
-import {getRandomInterviewCover} from "@/commons/utils";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "@/components/InterviewCard/DisplayTechIcons";
 import {DATE_TIME_FORMAT} from "@/commons/constants";
 import {Feedback, InterviewCardProps} from "@/commons/types";
+import {normalizeInterviewType} from "@/commons/utils";
 
-const InterviewCard = ({id: interviewId, role, type, techstack, coverImage, createdAt}: InterviewCardProps) => {
+const InterviewCard = ({id, role, type, technologies, coverImage, createdAt}: InterviewCardProps) => {
+    //ToDo: Resolve this feedback;
     const feedback = null as Feedback | null;
-    const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
+    const normalizedType = normalizeInterviewType(type);
     const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format(DATE_TIME_FORMAT);
 
     return (
@@ -38,9 +39,9 @@ const InterviewCard = ({id: interviewId, role, type, techstack, coverImage, crea
                     </p>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <DisplayTechIcons techStack={techstack}/>
+                    <DisplayTechIcons technologies={technologies}/>
                     <Button className="btn-primary">
-                        <Link href={feedback ? `/interview/${interviewId}/feedback` : `/interview/${interviewId}`}>
+                        <Link href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}>
                             {feedback ? 'Check Feedback' : 'View Interview'}
                         </Link>
                     </Button>

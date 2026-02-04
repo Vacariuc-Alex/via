@@ -1,50 +1,29 @@
 //User related types
-import {QuestionType} from "@/commons/enums";
+import {AuthStatus, InterviewDocFields, QuestionType, TranscriptMessage} from "@/commons/enums";
 import {Control, FieldValues, Path} from "react-hook-form";
+import type {AgentMode} from "@/commons/enums";
 
-export const enum UserFields {
-    ID = "id",
-    NAME = "name",
-    EMAIL = "email"
-};
-
-export interface User {
-    id: string;
-    name: string;
+//User related types
+export interface UserDoc {
+    id?: string;
+    username: string;
     email: string;
 };
 
-export type UserDbTable = Omit<User, UserFields.ID>;
-
 //Interview related types
-export const enum InterviewFields {
-    ID = "id",
-    ROLE = "role",
-    TYPE = "type",
-    LEVEL = "level",
-    TECHSTACK = "techstack",
-    AMOUNT = "amount",
-    QUESTIONS = "questions",
-    FINALIZED = "finalized",
-    COVER_IMAGE = "coverImage",
-    CREATED_AT = "createdAt",
-    USER_ID = "userId"
-};
-
-export interface Interview {
+export interface InterviewDoc {
     id: string;
     role: string;
     type: string;
     level: string;
-    techstack: string[];
+    techstack: string;
+    technologies: string[];
     questions: string[];
     finalized: boolean;
     coverImage: string;
     createdAt: string;
     userId: string;
 };
-
-export type InterviewDbTable = Omit<Interview, InterviewFields.ID>;
 
 //Feedback related types
 export interface Feedback {
@@ -62,50 +41,64 @@ export interface Feedback {
     createdAt: string;
 };
 
-//Auth related types
-export const SIGN_IN = "sign-in";
-export const SIGN_UP = "sign-up";
+export interface FeedbackDoc {
+    id?: string;
+    userId: string,
+    interviewId: string,
+    qa: InterviewQaPair[],
+    role: string,
+    level: string,
+    type: string,
+    technologies: string[],
+    feedback: string,
+    createdAt: string,
+}
 
-export type FormType = typeof SIGN_IN | typeof SIGN_UP;
-
-export interface FormTypeParams {
-    type: FormType;
-};
-
-//Transcript message related types and constants
-export const MESSAGE_TYPE = "transcript";
-export const MESSAGE_TRANSCRIPT_TYPE = "final";
-export const MESSAGE_ROLE_USER = "user";
-export const MESSAGE_ROLE_ASSISTANT = "assistant";
-
-export interface MessageEmitter {
-    type: typeof MESSAGE_TYPE;
-    transcriptType: typeof MESSAGE_TRANSCRIPT_TYPE;
-    role: typeof MESSAGE_ROLE_USER | typeof MESSAGE_ROLE_ASSISTANT;
+//Transcript message related types
+export interface SavedTranscribedMessage {
+    role: TranscriptMessage.ROLE_USER | TranscriptMessage.ROLE_ASSISTANT;
     content: string;
-};
+}
 
-export interface SavedMessage {
-    role: typeof MESSAGE_ROLE_USER | typeof MESSAGE_ROLE_ASSISTANT;
-    content: string;
-};
+export interface TranscriptMessageEmitter extends SavedTranscribedMessage {
+    type: TranscriptMessage.TYPE;
+    transcriptType: TranscriptMessage.TRANSCRIPT_TYPE;
+}
 
-//Props and Params
+//Component props
 export interface InterviewCardProps {
     id: string;
     role: string;
     type: string;
-    techstack: string[];
+    technologies: string[];
     coverImage: string;
     createdAt: string;
 };
 
-export interface InterviewGenerationPromptParams {
-    role: string;
-    level: string;
-    techstack: string;
-    type: string;
-    amount: number;
+export interface TechIconProps {
+    technologies: string[];
+};
+
+export interface AgentProps{
+    userId: string;
+    username: string;
+    interview?: InterviewDoc;
+    mode?: AgentMode;
+};
+
+//Method params
+export interface SignInParams {
+    email: string;
+    idToken: string;
+};
+
+export type SignUpParams = Pick<UserDoc, "email" | "username"> & {
+    userId: string;
+    password: string;
+};
+
+export interface FormTypeParams {
+    type: AuthStatus;
 };
 
 export interface GetLatestInterviewsParams {
@@ -113,31 +106,43 @@ export interface GetLatestInterviewsParams {
     limit?: number;
 };
 
-export interface SignInParams {
-    email: string;
-    idToken: string;
+export type InterviewGenerationPromptParams = Pick<InterviewDoc, "role" | "level" | "type" | "techstack"> & {
+    amount: string;
+};
+export type InterviewFeedbackPromptParams = Pick<InterviewDoc, "role" | "level" | "type" | "technologies"> & {
+    transcript: string;
 };
 
-export interface SignUpParams {
-    uid: string;
-    name: string;
-    email: string;
-    password: string;
+export interface AgentParams {
+    interview?: InterviewDoc;
+    mode: AgentMode;
 };
 
-export interface TechIconProps {
-    techStack: string[];
+export interface RouteParams {
+    params: Promise<Record<string, string>>;
+    searchParams: Promise<Record<string, string>>;
+}
+
+//Payloads
+export interface InterviewQaPair {
+    q: string;
+    a: string;
+}
+
+export type InterviewDialogPayload =
+    Pick<InterviewDoc, "userId" | "role" | "level" | "type" | "technologies"> & {
+    interviewId: string;
+    qa: InterviewQaPair[];
 };
 
-export interface AgentProps {
-    userName: string;
+export type InterviewGenerationPayload = {
     userId: string;
-    type: string;
-};
+} & Record<string, string>;
 
+//Other types
 export type State =
     { type: QuestionType.SAY; text: string }
-    | { type: QuestionType.ASK; id: string; text: string }
+    | { type: QuestionType.ASK; id?: InterviewDocFields; text: string }
     | { type: QuestionType.END; };
 
 export interface FormFieldProps<T extends FieldValues> {
@@ -154,20 +159,6 @@ interface CreateFeedbackParams {
     userId: string;
     transcript: { role: string; content: string }[];
     feedbackId?: string;
-}
-
-interface AgentProps {
-    userName: string;
-    userId?: string;
-    interviewId?: string;
-    feedbackId?: string;
-    type: "generate" | "interview";
-    questions?: string[];
-}
-
-interface RouteParams {
-    params: Promise<Record<string, string>>;
-    searchParams: Promise<Record<string, string>>;
 }
 
 interface GetFeedbackByInterviewIdParams {
