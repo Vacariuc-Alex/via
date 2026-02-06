@@ -6,10 +6,16 @@ import DisplayTechIcons from "@/components/InterviewCard/DisplayTechIcons";
 import {DATE_TIME_FORMAT} from "@/commons/constants";
 import {FeedbackDoc, InterviewCardProps} from "@/commons/types";
 import {normalizeInterviewType} from "@/commons/utils";
+import {getCurrentUser} from "@/features/service/auth";
+import {getLatestFeedbackByUserIdAndInterviewId} from "@/features/service/feedback";
 
-const InterviewCard = ({id, role, type, technologies, coverImage, createdAt}: InterviewCardProps) => {
-    //ToDo: Resolve this feedback;
-    const feedback = null as FeedbackDoc | null;
+const InterviewCard = async ({id: interviewId, role, type, technologies, coverImage, createdAt}: InterviewCardProps) => {
+    const user = await getCurrentUser();
+    const userId = user?.id ?? "";
+
+    const feedback = await getLatestFeedbackByUserIdAndInterviewId(userId, interviewId) as FeedbackDoc | null;
+    const feedbackId = feedback?.id;
+
     const normalizedType = normalizeInterviewType(type);
     const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format(DATE_TIME_FORMAT);
 
@@ -41,9 +47,10 @@ const InterviewCard = ({id, role, type, technologies, coverImage, createdAt}: In
                 <div className="flex flex-row justify-between">
                     <DisplayTechIcons technologies={technologies}/>
                     <Button className="btn-primary">
-                        <Link href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}>
-                            {feedback ? 'Check Feedback' : 'View Interview'}
-                        </Link>
+                    {feedback
+                        ? <Link href={`/interview/${interviewId}/feedback?feedbackId=${feedbackId}`}>Check Feedback</Link>
+                        : <Link href={`/interview/${interviewId}`}>View Interview</Link>
+                    }
                     </Button>
                 </div>
             </div>

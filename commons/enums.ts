@@ -54,6 +54,12 @@ export const enum InterviewDocFields {
     USER_ID = "userId"
 };
 
+export const enum FeedbackDocFields {
+    USER_ID = "userId",
+    INTERVIEW_ID = "interviewId",
+    CREATED_AT = "createdAt"
+};
+
 export const enum InterviewType {
     MIXED = "Mixed",
     TECHNICAL = "Technical",

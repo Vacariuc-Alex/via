@@ -11,18 +11,16 @@ import {normalizeInterviewType} from "@/commons/utils";
 
 const Page = async ({params}: RouteParams) => {
     const resolvedParams = await params;
-    const interviewId = String(resolvedParams?.id);
 
-    if(!interviewId) redirect('/');
-
-    const interview = await getInterviewById(interviewId);
-    const normalizedType = normalizeInterviewType(interview?.type);
+    const interviewId = resolvedParams?.id;
+    const interview = interviewId && await getInterviewById(interviewId);
+    const normalizedType = interview && normalizeInterviewType(interview?.type);
 
     const user = await getCurrentUser();
     const userId = user?.id ?? "";
     const username = user?.username ?? "Fellow User";
 
-    if(!interview) redirect('/')
+    if(!interview || !user) redirect('/');
 
     return (
         <>
