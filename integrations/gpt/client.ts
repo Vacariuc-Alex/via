@@ -1,6 +1,6 @@
-import {InterviewDialogPayload, InterviewGenerationPayload} from "@/commons/types";
+import {InterviewDialogPayload, InterviewGenerationPayload, AiAnswersResponse} from "@/commons/types";
 
-export async function submitGenerateAnswersToAi(answers: InterviewGenerationPayload) {
+export async function submitGenerateAnswersToAi(answers: InterviewGenerationPayload): Promise<AiAnswersResponse> {
     const res = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: {
@@ -16,7 +16,7 @@ export async function submitGenerateAnswersToAi(answers: InterviewGenerationPayl
     return res.json();
 }
 
-export async function submitInterviewAnswersToAi(answers: InterviewDialogPayload) {
+export async function submitInterviewAnswersToAi(answers: InterviewDialogPayload): Promise<AiAnswersResponse> {
     const res = await fetch('/api/ai/interview', {
         method: 'POST',
         headers: {

@@ -10,8 +10,9 @@ import {AgentMode} from "@/commons/enums";
 import {normalizeInterviewType} from "@/commons/utils";
 
 const Page = async ({params}: RouteParams) => {
-    const {id} = await params;
-    const interviewId = String(id ?? "").trim();
+    const resolvedParams = await params;
+    const interviewId = String(resolvedParams?.id);
+
     if(!interviewId) redirect('/');
 
     const interview = await getInterviewById(interviewId);

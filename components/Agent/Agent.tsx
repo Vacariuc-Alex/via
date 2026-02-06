@@ -6,7 +6,7 @@ import {createInterviewController} from '@/features/agent/orchestrator';
 import Image from 'next/image';
 import {cn} from '@/commons/utils';
 import {AgentMode, CallStatus, InterviewEvent, TranscriptMessage} from '@/commons/enums';
-import {AgentProps, SavedTranscribedMessage} from "@/commons/types";
+import {AgentProps, FeedbackReadyPayload, SavedTranscribedMessage} from "@/commons/types";
 
 export default function Agent({username, userId, interview, mode}: AgentProps) {
     const router = useRouter();
@@ -15,38 +15,19 @@ export default function Agent({username, userId, interview, mode}: AgentProps) {
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
     const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
     const [messages, setMessages] = useState<SavedTranscribedMessage[]>([]);
-    const [isForcedDisconnect, setIsForcedDisconnect] = useState<boolean>(false);
+    const [isForcedDisconnect, setIsDisconnect] = useState<boolean>(false);
 
     const lastMessage = messages.length ? messages[messages.length - 1] : null;
 
     useEffect(() => {
-        if (callStatus === CallStatus.FINISHED) {
-            if(interview?.id && mode === AgentMode.INTERVIEW && !isForcedDisconnect) {
-                handleFeedbackGeneration(interview.id, messages);
-            } else {
-                router.push('/');
-            }
-        }
-    }, [callStatus]);
-
-    //ToDo: This is a dummy function for now!
-    const handleFeedbackGeneration = (interviewId: string, messages: SavedTranscribedMessage[])=>{
-        console.log('Generating feedback...');
-
-        const {success, id} = {
-            success: true,
-            id: "new-interview-id"
-        };
-
-        if(success && id) {
-            router.push(`${interviewId}/feedback`);
-        } else {
-            console.log('Error saving feedback...');
+        if (callStatus !== CallStatus.FINISHED) return;
+        if (mode !== AgentMode.INTERVIEW || isForcedDisconnect) {
             router.push('/');
         }
-    }
+    }, [callStatus, isForcedDisconnect, mode, router]);
 
     function handleCall() {
+        setIsDisconnect(false);
         setCallStatus(CallStatus.CONNECTING);
         setMessages([]);
 
@@ -57,6 +38,9 @@ export default function Agent({username, userId, interview, mode}: AgentProps) {
         const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
         const onSpeechStart = () => setIsSpeaking(true);
         const onSpeechEnd = () => setIsSpeaking(false);
+        const onFeedbackReady = ({interviewId, feedbackId}: FeedbackReadyPayload) => {
+            router.push(`/interview/${interviewId}/feedback?feedbackId=${feedbackId}`);
+        };
         const onMessage = (message: any) => {
             if (message.type !== TranscriptMessage.TYPE || message.transcriptType !== TranscriptMessage.TRANSCRIPT_TYPE) return;
             setMessages((prev) => [
@@ -73,6 +57,7 @@ export default function Agent({username, userId, interview, mode}: AgentProps) {
         controller.on(InterviewEvent.SPEECH_START, onSpeechStart);
         controller.on(InterviewEvent.SPEECH_END, onSpeechEnd);
         controller.on(InterviewEvent.MESSAGE, onMessage);
+        controller.on(InterviewEvent.FEEDBACK_READY, onFeedbackReady);
 
         if(mode === AgentMode.GENERATE) {
             controller.start({mode});
@@ -85,7 +70,7 @@ export default function Agent({username, userId, interview, mode}: AgentProps) {
         controllerRef.current?.stop();
         controllerRef.current = null;
         setCallStatus(CallStatus.FINISHED);
-        setIsForcedDisconnect(true);
+        setIsDisconnect(true);
     }
 
     return (

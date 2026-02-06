@@ -3,7 +3,8 @@ export const enum InterviewEvent {
     CALL_END = "call-end",
     SPEECH_START = "speech-start",
     SPEECH_END = "speech-end",
-    MESSAGE = "message"
+    MESSAGE = "message",
+    FEEDBACK_READY = "feedback-ready"
 };
 
 export const enum QuestionType {

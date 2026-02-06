@@ -1,7 +1,7 @@
 import {InterviewDialogPayload, InterviewFeedbackPromptParams, FeedbackDoc} from "@/commons/types";
-import {generateText} from "ai";
+import {generateObject} from "ai";
 import {groq} from "@ai-sdk/groq";
-import {AI_MODEL, INTERVIEW_FEEDBACK_PROMPT} from "@/commons/constants";
+import {AI_MODEL, FEEDBACK_SCHEMA, INTERVIEW_FEEDBACK_PROMPT} from "@/commons/constants";
 import {db} from "@/integrations/firebase/admin";
 import {DbDoc} from "@/commons/enums";
 import {formatInterviewQaPairs} from "@/commons/utils";
@@ -11,8 +11,9 @@ export async function POST(request: Request) {
     try {
         const transcript = formatInterviewQaPairs(qa);
 
-        const {text: feedbackText} = await generateText({
+        const {object: feedbackText} = await generateObject({
             model: groq(AI_MODEL),
+            schema: FEEDBACK_SCHEMA,
             prompt: INTERVIEW_FEEDBACK_PROMPT({
                 role,
                 level,
@@ -34,9 +35,9 @@ export async function POST(request: Request) {
             createdAt: new Date().toISOString()
         } satisfies FeedbackDoc;
 
-        await db.collection(DbDoc.FEEDBACK).add(feedbackDoc);
+        const docRef = await db.collection(DbDoc.FEEDBACK).add(feedbackDoc);
 
-        return Response.json({success: true}, {status: 200});
+        return Response.json({success: true, feedbackId: docRef.id}, {status: 200});
     } catch (error) {
         console.error(error);
         return Response.json({success: false, error: "Failed to generate feedback"}, {status: 500});

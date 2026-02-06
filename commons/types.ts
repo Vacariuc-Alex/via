@@ -12,7 +12,7 @@ export interface UserDoc {
 
 //Interview related types
 export interface InterviewDoc {
-    id: string;
+    id?: string;
     role: string;
     type: string;
     level: string;
@@ -27,8 +27,6 @@ export interface InterviewDoc {
 
 //Feedback related types
 export interface Feedback {
-    id: string;
-    interviewId: string;
     totalScore: number;
     categoryScores: Array<{
         name: string;
@@ -38,7 +36,6 @@ export interface Feedback {
     strengths: string[];
     areasForImprovement: string[];
     finalAssessment: string;
-    createdAt: string;
 };
 
 export interface FeedbackDoc {
@@ -50,7 +47,7 @@ export interface FeedbackDoc {
     level: string,
     type: string,
     technologies: string[],
-    feedback: string,
+    feedback: Feedback,
     createdAt: string,
 }
 
@@ -109,6 +106,7 @@ export interface GetLatestInterviewsParams {
 export type InterviewGenerationPromptParams = Pick<InterviewDoc, "role" | "level" | "type" | "techstack"> & {
     amount: string;
 };
+
 export type InterviewFeedbackPromptParams = Pick<InterviewDoc, "role" | "level" | "type" | "technologies"> & {
     transcript: string;
 };
@@ -129,8 +127,7 @@ export interface InterviewQaPair {
     a: string;
 }
 
-export type InterviewDialogPayload =
-    Pick<InterviewDoc, "userId" | "role" | "level" | "type" | "technologies"> & {
+export type InterviewDialogPayload = Pick<InterviewDoc, "userId" | "role" | "level" | "type" | "technologies"> & {
     interviewId: string;
     qa: InterviewQaPair[];
 };
@@ -138,6 +135,11 @@ export type InterviewDialogPayload =
 export type InterviewGenerationPayload = {
     userId: string;
 } & Record<string, string>;
+
+export interface FeedbackReadyPayload {
+    interviewId: string;
+    feedbackId: string;
+}
 
 //Other types
 export type State =
@@ -153,25 +155,8 @@ export interface FormFieldProps<T extends FieldValues> {
     type?: "text" | "email" | "password";
 }
 
-/*
-interface CreateFeedbackParams {
-    interviewId: string;
-    userId: string;
-    transcript: { role: string; content: string }[];
-    feedbackId?: string;
-}
-
-interface GetFeedbackByInterviewIdParams {
-    interviewId: string;
-    userId: string;
-}
-
-interface InterviewFormProps {
-    interviewId: string;
-    role: string;
-    level: string;
-    type: string;
-    techstack: string[];
-    amount: number;
-}
-*/
+export type AiAnswersResponse = {
+    success: boolean;
+    feedbackId: string;
+    error?: string;
+};

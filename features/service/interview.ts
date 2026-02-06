@@ -2,7 +2,7 @@
 
 import {db} from "@/integrations/firebase/admin";
 import {DbDoc, InterviewDocFields} from "@/commons/enums";
-import {GetLatestInterviewsParams, InterviewDoc} from "@/commons/types";
+import {GetLatestInterviewsParams, InterviewDoc, FeedbackDoc} from "@/commons/types";
 
 export async function getInterviewsByUserId(userId: string): Promise<InterviewDoc[] | null> {
     const interviews = await db.collection(DbDoc.INTERVIEWS)
@@ -41,4 +41,15 @@ export async function getLatestInterviewsByOtherUsers(params: GetLatestInterview
         id: e.id,
         ...e.data()
     })) as InterviewDoc[];
+}
+
+export async function getFeedbackById(id: string): Promise<FeedbackDoc | null> {
+    const feedback = await db.collection(DbDoc.FEEDBACK)
+        .doc(id)
+        .get();
+
+    return {
+        id: feedback.id,
+        ...(feedback.data()),
+    } as FeedbackDoc;
 }

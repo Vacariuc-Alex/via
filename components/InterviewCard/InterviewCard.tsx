@@ -4,12 +4,12 @@ import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "@/components/InterviewCard/DisplayTechIcons";
 import {DATE_TIME_FORMAT} from "@/commons/constants";
-import {Feedback, InterviewCardProps} from "@/commons/types";
+import {FeedbackDoc, InterviewCardProps} from "@/commons/types";
 import {normalizeInterviewType} from "@/commons/utils";
 
 const InterviewCard = ({id, role, type, technologies, coverImage, createdAt}: InterviewCardProps) => {
     //ToDo: Resolve this feedback;
-    const feedback = null as Feedback | null;
+    const feedback = null as FeedbackDoc | null;
     const normalizedType = normalizeInterviewType(type);
     const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format(DATE_TIME_FORMAT);
 
@@ -31,11 +31,11 @@ const InterviewCard = ({id, role, type, technologies, coverImage, createdAt}: In
                         </div>
                         <div className="flex flex-row gap-2 items-center">
                             <Image src="/star.svg" alt="star" width={22} height={22}/>
-                            <p>{feedback?.totalScore || '---'}/100</p>
+                            <p>{feedback?.feedback.totalScore || '---'}/100</p>
                         </div>
                     </div>
                     <p className="line-clamp-2 mt-5">
-                        {feedback?.finalAssessment || "You haven't taken this interview yet. Take it now to improve your skills."}
+                        {feedback?.feedback.finalAssessment || "You haven't taken this interview yet. Take it now to improve your skills."}
                     </p>
                 </div>
                 <div className="flex flex-row justify-between">

@@ -16,7 +16,7 @@ import {
 import {AgentMode, InterviewEvent, QuestionType, TranscriptMessage} from "@/commons/enums";
 import {
     AgentParams, InterviewDoc, InterviewDialogPayload, InterviewGenerationPayload,
-    TranscriptMessageEmitter
+    FeedbackReadyPayload, TranscriptMessageEmitter
 } from "@/commons/types";
 
 export function createInterviewController(
@@ -230,7 +230,7 @@ export function createInterviewController(
                     return;
                 }
 
-                await submitInterviewAnswersToAi({
+                const aiAnswersResponse = await submitInterviewAnswersToAi({
                     userId,
                     interviewId: thisInterview.id ?? "",
                     qa: stateMachine.interviewQaPairs,
@@ -239,6 +239,13 @@ export function createInterviewController(
                     type: thisInterview.type,
                     technologies: thisInterview.technologies,
                 } satisfies InterviewDialogPayload);
+
+                if (aiAnswersResponse?.success && aiAnswersResponse?.feedbackId) {
+                    eventEmitter.emit(InterviewEvent.FEEDBACK_READY, {
+                        interviewId: thisInterview.id,
+                        feedbackId: aiAnswersResponse.feedbackId,
+                    } satisfies FeedbackReadyPayload);
+                }
             }
 
             eventEmitter.emit(InterviewEvent.CALL_END);

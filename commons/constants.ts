@@ -1,4 +1,4 @@
-//import { z } from "zod";
+import { z } from "zod";
 import {InterviewFeedbackPromptParams, InterviewGenerationPromptParams} from "@/commons/types";
 
 export const TECHSTACK_NORMALIZED_NAMES = {
@@ -161,7 +161,7 @@ export const TECHSTACK_NORMALIZED_NAMES = {
   amplify: "amplify"
 };
 
-/*export const feedbackSchema = z.object({
+export const FEEDBACK_SCHEMA = z.object({
   totalScore: z.number(),
   categoryScores: z.tuple([
     z.object({
@@ -193,7 +193,7 @@ export const TECHSTACK_NORMALIZED_NAMES = {
   strengths: z.array(z.string()),
   areasForImprovement: z.array(z.string()),
   finalAssessment: z.string(),
-});*/
+});
 
 export const INTERVIEW_COVERS = [
   "/adobe.png",
@@ -265,7 +265,10 @@ export const INTERVIEW_GENERATION_PROMPT = (params: InterviewGenerationPromptPar
 `;
 
 export const INTERVIEW_FEEDBACK_PROMPT = (params: InterviewFeedbackPromptParams) => `
-  You are an expert technical interviewer and career coach!
+  You are an expert technical interviewer and career coach. You are also an AI interviewer analyzing a mock interview.
+  Your task is to evaluate the candidate based on structured categories.
+  Be thorough and detailed in your analysis. Don't be lenient with the candidate.
+
   Context about this interview:
     - Role: ${params.role}
     - Level: ${params.level}
@@ -278,16 +281,36 @@ export const INTERVIEW_FEEDBACK_PROMPT = (params: InterviewFeedbackPromptParams)
 
   Task: Provide concise, actionable feedback tailored to the role/level/type/tech stack above.
 
-  Return your answer in plain text with the following sections (keep the headings):
-    1) Overall assessment (2-4 sentences)
-    2) Score (0-100)
-    3) Strengths (3-6 bullet points)
-    4) Areas to improve (3-6 bullet points)
-    5) Suggested follow-up questions (3-5 questions specific to the role/tech stack)
+  IMPORTANT OUTPUT RULES:
+    - Return ONLY valid JSON. No markdown, no code fences, no extra text.
+    - The JSON MUST strictly match this shape:
+      {
+        "totalScore": 0,
+        "categoryScores": [
+          {"name": "Communication Skills", "score": 0, "comment": "..."},
+          {"name": "Technical Knowledge", "score": 0, "comment": "..."},
+          {"name": "Problem Solving", "score": 0, "comment": "..."},
+          {"name": "Cultural Fit", "score": 0, "comment": "..."},
+          {"name": "Confidence and Clarity", "score": 0, "comment": "..."}
+        ],
+        "strengths": ["..."],
+        "areasForImprovement": ["..."],
+        "finalAssessment": "..."
+      }
+    - Do NOT rename category names. Use EXACTLY these strings:
+      "Communication Skills", "Technical Knowledge", "Problem Solving", "Cultural Fit", "Confidence and Clarity".
+    - Do NOT add, remove, reorder, or nest categories.
 
-  Rules:
+  Scoring guidance (0-100 total, category scores can be 0-100):
+    - Communication Skills: clarity, articulation, structured responses.
+    - Technical Knowledge: understanding of key concepts for the role.
+    - Problem Solving: ability to analyze problems and propose solutions.
+    - Cultural Fit: alignment with role expectations and collaboration.
+    - Confidence and Clarity: confidence in responses, engagement, and clarity.
+
+  Additional rules:
     - Base feedback only on the transcript.
-    - If information is missing, say what’s missing and how it impacted the evaluation.
+    - If information is missing, say what's missing and how it impacted the evaluation.
     - Be professional, direct, and constructive.
 `;
 
