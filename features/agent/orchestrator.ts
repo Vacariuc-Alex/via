@@ -55,12 +55,29 @@ export function createInterviewController(
             return;
         }
 
+        speechRecognition.onstart = () => {
+            if (isStateMachineStopped) return;
+            eventEmitter.emit(InterviewEvent.USER_LISTEN_START);
+        };
+
+        speechRecognition.onspeechstart = () => {
+            if (isStateMachineStopped) return;
+            eventEmitter.emit(InterviewEvent.USER_LISTEN_START);
+        };
+
+        speechRecognition.onspeechend = () => {
+            if (isStateMachineStopped) return;
+            eventEmitter.emit(InterviewEvent.USER_LISTEN_END);
+        };
+
         speechRecognition.onresult = (event: any) => {
             transcript = event.results[0][0].transcript;
         };
 
         speechRecognition.onend = async () => {
             if (isStateMachineStopped) return;
+
+            eventEmitter.emit(InterviewEvent.USER_LISTEN_END);
 
             if (!hadPreviousAudioSpeechError && transcriptMessageTimeout) {
                 clearTimeout(transcriptMessageTimeout);
@@ -106,6 +123,8 @@ export function createInterviewController(
         speechRecognition.onerror = async () => {
             if (isStateMachineStopped) return;
 
+            eventEmitter.emit(InterviewEvent.USER_LISTEN_END);
+
             if (transcriptMessageTimeout) {
                 clearTimeout(transcriptMessageTimeout);
                 transcriptMessageTimeout = null;
@@ -144,12 +163,17 @@ export function createInterviewController(
 
         try {
             if (speechRecognition) {
+                speechRecognition.onstart = null;
+                speechRecognition.onspeechstart = null;
+                speechRecognition.onspeechend = null;
                 speechRecognition.onend = null;
                 speechRecognition.onerror = null;
                 speechRecognition.onresult = null;
                 speechRecognition.abort();
             }
         } catch {}
+
+        eventEmitter.emit(InterviewEvent.USER_LISTEN_END);
 
         if (transcriptMessageTimeout) {
             clearTimeout(transcriptMessageTimeout);

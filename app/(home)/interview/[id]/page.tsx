@@ -30,9 +30,15 @@ const Page = async ({params}: RouteParams) => {
                         <Image src={interview.coverImage} alt="cover-image" width={40} height={40} className="rounded-full object-cover size-[40px]" />
                         <h3 className="capitalize">{interview.role}</h3>
                     </div>
-                    <DisplayTechIcons technologies={interview.technologies} />
+                    <div className="tech-pills-container">
+                        <DisplayTechIcons technologies={interview.technologies}/>
+                    </div>
                 </div>
-                <p className="bg-dark-200 px-4 py-2 rounded-lg h-fit capitalize">{normalizedType}</p>
+                <div className="flex items-center">
+                    <div className="badge-label flex items-center">
+                        {normalizedType}
+                    </div>
+                </div>
             </div>
             <Agent username={username} userId={userId} interview={interview} mode={AgentMode.INTERVIEW}/>
         </>

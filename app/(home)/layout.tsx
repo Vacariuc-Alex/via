@@ -15,8 +15,8 @@ const HomeLayout = async ({children}: {children: ReactNode}) => {
         <div className="home-layout">
             <nav>
                 <Link href="/" className="flex items-center gap-2">
-                    <Image src="/logo.svg" alt="logo" width={38} height={32} />
-                    <h2 className="text-primary-100">Virtual Interview Assistant</h2>
+                    <Image src="/logo.svg" alt="logo" width={80} height={80} />
+                    <h1 className="text-primary-100">Virtual Interview Assistant</h1>
                 </Link>
             </nav>
             {children}

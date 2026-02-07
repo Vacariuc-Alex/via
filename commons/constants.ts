@@ -196,18 +196,16 @@ export const FEEDBACK_SCHEMA = z.object({
 });
 
 export const INTERVIEW_COVERS = [
-  "/adobe.png",
   "/amazon.png",
-  "/facebook.png",
-  "/hostinger.png",
-  "/pinterest.png",
-  "/quora.png",
-  "/reddit.png",
-  "/skype.png",
-  "/spotify.png",
-  "/telegram.png",
-  "/tiktok.png",
-  "/yahoo.png",
+  "/apple.png",
+  "/cisco.png",
+  "/google.png",
+  "/ibm.png",
+  "/intel.png",
+  "/microsoft.png",
+  "/oracle.png",
+  "/samsung.png",
+  "/xiaomi.png"
 ];
 
 export const VOICE_AGENT_PROPS = {

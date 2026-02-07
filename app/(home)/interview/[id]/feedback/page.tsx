@@ -22,7 +22,7 @@ const Page = async ({params, searchParams}: RouteParams) => {
     if(!interview || !feedback) redirect('/');
 
     return (
-        <section className="section-feedback max-w-3xl mx-auto">
+        <section className="feedback-section max-w-3xl mx-auto">
             <div className="flex flex-row justify-center">
                 <h1 className="text-4xl font-semibold">
                     Feedback on the Interview -{" "}
@@ -36,7 +36,7 @@ const Page = async ({params, searchParams}: RouteParams) => {
                         <Image src="/star.svg" width={22} height={22} alt="star" />
                         <p className="text-justify">
                             Overall Impression:{" "}
-                            <span className="text-primary-200 font-bold">{feedback.feedback.totalScore}</span>/100
+                            <span className="text-score font-bold">{feedback.feedback.totalScore}</span>/100
                         </p>
                     </div>
 
@@ -57,7 +57,7 @@ const Page = async ({params, searchParams}: RouteParams) => {
                 <h2>Breakdown of the Interview:</h2>
                 {feedback.feedback.categoryScores.map((e: any, i: any) => (
                     <div key={i}>
-                        <p className="font-bold">
+                        <p className="text-breakdown-section font-bold">
                             {i + 1}. {e.name} ({e.score}/100)
                         </p>
                         <p>
@@ -85,15 +85,15 @@ const Page = async ({params, searchParams}: RouteParams) => {
                 </ul>
             </div>
 
-            <div className="buttons">
-                <Button className="btn-secondary flex-1">
+            <div className="feedback-buttons">
+                <Button className="feedback-btn-secondary flex-1">
                     <Link href="/" className="flex w-full justify-center">
                         <p className="text-sm font-semibold text-primary-200 text-center">
                             Back to dashboard
                         </p>
                     </Link>
                 </Button>
-                <Button className="btn-primary">
+                <Button className="feedback-btn-primary">
                     <Link href={`/interview/${interviewId}`}>Retake Interview</Link>
                 </Button>
             </div>

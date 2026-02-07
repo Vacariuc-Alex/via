@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="75" height="60" viewBox="0 0 75 60" fill="none">
+    <defs>
+        <!-- toned-down gradients -->
+        <linearGradient id="g1" x1="10" y1="6" x2="64" y2="54" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#4DB6AC"/>
+            <stop offset="0.55" stop-color="#5E5CE6"/>
+            <stop offset="1" stop-color="#66BB6A"/>
+        </linearGradient>
+        <linearGradient id="g2" x1="12" y1="10" x2="63" y2="50" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0A1020"/>
+            <stop offset="1" stop-color="#0A1020" stop-opacity="0.35"/>
+        </linearGradient>
+
+        <!-- softer glow -->
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="1.4" result="b"/>
+            <feColorMatrix in="b" type="matrix"
+                           values="0 0 0 0 0
+                0 0 0 0 0.5
+                0 0 0 0 0.6
+                0 0 0 0.45 0" result="c"/>
+            <feMerge>
+                <feMergeNode in="c"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+
+        <clipPath id="screen">
+            <rect x="14" y="14" width="47" height="32" rx="10"/>
+        </clipPath>
+    </defs>
+
+    <!-- outer frame -->
+    <rect x="8.5" y="8.5" width="58" height="43" rx="14"
+          fill="url(#g2)" stroke="url(#g1)" stroke-width="1.3" filter="url(#glow)"/>
+
+    <!-- antenna -->
+    <path d="M38 1.5v6.5" stroke="url(#g1)" stroke-width="1.3" stroke-linecap="round"/>
+    <circle cx="38" cy="2" r="2" fill="#4DB6AC"/>
+
+    <!-- side ports -->
+    <path d="M8 24h-3M8 36h-3M67 24h3M67 36h3"
+          stroke="url(#g1)" stroke-width="1.3" stroke-linecap="round"/>
+
+    <!-- face area -->
+    <g clip-path="url(#screen)">
+        <!-- subtle scanlines -->
+        <g opacity="0.12">
+            <path d="M14 18h47M14 24h47M14 30h47M14 36h47M14 42h47"
+                  stroke="#4DB6AC" stroke-width="1"/>
+        </g>
+
+        <!-- eyes -->
+        <circle cx="28" cy="30" r="5"
+                fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+        <circle cx="48" cy="30" r="5"
+                fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+
+        <!-- pupils -->
+        <circle cx="28" cy="30" r="2" fill="#66BB6A"/>
+        <circle cx="48" cy="30" r="2" fill="#66BB6A"/>
+
+        <!-- mouth -->
+        <path d="M30.5 40.5c2.5 2.2 11.5 2.2 14 0"
+              stroke="url(#g1)" stroke-width="1.5" stroke-linecap="round"/>
+
+        <!-- HUD corner marks -->
+        <g opacity="0.55">
+            <path d="M16 16h6M16 16v6M59 16h-6M59 16v6
+               M16 44h6M16 44v-6M59 44h-6M59 44v-6"
+                  stroke="#4DB6AC" stroke-width="1.1" stroke-linecap="round"/>
+        </g>
+    </g>
+
+    <!-- bottom base -->
+    <path d="M22 52.5h32" stroke="url(#g1)" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M28 55.5h20" stroke="url(#g1)" stroke-width="1.1" stroke-linecap="round" opacity="0.7"/>
+</svg>
