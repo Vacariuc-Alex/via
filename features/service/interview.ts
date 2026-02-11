@@ -21,6 +21,8 @@ export async function getInterviewById(id: string): Promise<InterviewDoc | null>
         .doc(id)
         .get();
 
+    if (!interview.exists) return null;
+
     return {
         id: interview.id,
         ...(interview.data()),
