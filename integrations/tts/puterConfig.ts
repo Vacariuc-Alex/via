@@ -1,4 +1,4 @@
-import {VOICE_AGENT_PROPS} from '@/commons/constants';
+/*import {VOICE_AGENT_PROPS} from '@/commons/constants';
 
 let isPuterReady = false;
 export async function load(): Promise<void> {
@@ -65,4 +65,53 @@ export function stopSpeaking() {
         currentAudio.currentTime = 0;
         currentAudio = null;
     }
+}*/
+
+let isReady = false;
+let currentUtterance: SpeechSynthesisUtterance | null = null;
+
+export async function load(): Promise<void> {
+    if (isReady) return;
+
+    if (typeof window === "undefined") return;
+
+    if (!("speechSynthesis" in window)) {
+        throw new Error("Speech synthesis not supported");
+    }
+
+    isReady = true;
+}
+
+export async function speak(text: string): Promise<void> {
+    if (!isReady) {
+        throw new Error("Speech system not initialized");
+    }
+
+    return new Promise((resolve, reject) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        currentUtterance = utterance;
+
+        utterance.onend = () => {
+            if (currentUtterance === utterance) {
+                currentUtterance = null;
+            }
+            resolve();
+        };
+
+        utterance.onerror = () => {
+            if (currentUtterance === utterance) {
+                currentUtterance = null;
+            }
+            reject();
+        };
+
+        window.speechSynthesis.speak(utterance);
+    });
+}
+
+export function stopSpeaking(): void {
+    if (typeof window === "undefined") return;
+
+    window.speechSynthesis.cancel();
+    currentUtterance = null;
 }
