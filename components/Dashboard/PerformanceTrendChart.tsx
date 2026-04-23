@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import {PerformanceTrendChartProps} from "@/commons/types";
 
 const WIDTH = 640;
-const HEIGHT = 500;
+const HEIGHT = 520;
 const PADDING = { top: 24, right: 20, bottom: 42, left: 20 };
 const INNER_WIDTH = WIDTH - PADDING.left - PADDING.right;
 const INNER_HEIGHT = HEIGHT - PADDING.top - PADDING.bottom;

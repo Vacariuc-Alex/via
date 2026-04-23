@@ -36,6 +36,21 @@ export async function getLatestFeedbackByUserIdAndInterviewId(userId: string, in
     } as FeedbackDoc;
 }
 
+export async function getFeedbackHistoryByUserIdAndInterviewId(userId: string, interviewId: string): Promise<FeedbackDoc[]> {
+    if (!userId || !interviewId) return [];
+
+    const feedbackSnapshot = await db.collection(DbDoc.FEEDBACK)
+        .where(FeedbackDocFields.USER_ID, "==", userId)
+        .where(FeedbackDocFields.INTERVIEW_ID, "==", interviewId)
+        .orderBy(FeedbackDocFields.CREATED_AT, "asc")
+        .get();
+
+    return feedbackSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data()),
+    })) as FeedbackDoc[];
+}
+
 export async function getInterviewPerformanceStatsByUserId(userId: string): Promise<InterviewPerformanceStats> {
     if (!userId) return EMPTY_INTERVIEW_PERFORMANCE_STATS;
 
