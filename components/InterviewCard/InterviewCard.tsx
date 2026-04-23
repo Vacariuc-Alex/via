@@ -19,7 +19,7 @@ const InterviewCard = async ({id: interviewId, role, type, technologies, coverIm
     const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format(DATE_TIME_FORMAT);
 
     return (
-        <div className="interview-card-container w-[360px] max-sm:w-full min-h-[420px]">
+        <div className="interview-card-container w-[360px] max-sm:w-full">
             <div className="interview-card-inner">
                 <div className="interview-badge">
                     {normalizedType}

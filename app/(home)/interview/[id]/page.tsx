@@ -27,15 +27,17 @@ const Page = async ({params}: RouteParams) => {
             <div className="flex flex-row gap-4 justify-between">
                 <div className="flex flex-row gap-4 items-center max-sm:flex-col">
                     <div className="flex flex-row gap-4 items-center">
-                        <Image src={interview.coverImage} alt="cover-image" width={40} height={40} className="rounded-full object-cover size-[40px]" />
+                        <div className="relative w-[70px] h-[70px] shrink-0">
+                            <Image src={interview.coverImage} alt="cover-image" fill sizes="70px" className="rounded-full object-cover"/>
+                        </div>
                         <h3 className="capitalize">{interview.role}</h3>
                     </div>
-                    <div className="tech-pills-container">
+                    <div className="tech-pills-container max-sm:self-start">
                         <DisplayTechIcons technologies={interview.technologies}/>
                     </div>
                 </div>
-                <div className="flex items-center">
-                    <div className="badge-label flex items-center">
+                <div className="flex items-end justify-center sm:items-center">
+                    <div className="badge-label flex mb-5 sm:mb-0">
                         {normalizedType}
                     </div>
                 </div>
