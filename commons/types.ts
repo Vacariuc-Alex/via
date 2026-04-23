@@ -167,6 +167,15 @@ export interface FeedbackReadyPayload {
     feedbackId: string;
 }
 
+export type AnswerInputMode = "voice" | "write";
+
+export interface AnswerInputReadyPayload {
+    prompt: string;
+    value?: string;
+    mode: AnswerInputMode;
+    isReview: boolean;
+}
+
 //Other types
 export type State =
     { type: QuestionType.SAY; text: string }

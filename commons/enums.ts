@@ -6,7 +6,10 @@ export const enum InterviewEvent {
     USER_LISTEN_START = "user-listen-start",
     USER_LISTEN_END = "user-listen-end",
     MESSAGE = "message",
-    FEEDBACK_READY = "feedback-ready"
+    FEEDBACK_READY = "feedback-ready",
+    ANSWER_INPUT_READY = "answer-input-ready",
+    ANSWER_INPUT_IDLE = "answer-input-idle",
+    VOICE_INPUT_UNAVAILABLE = "voice-input-unavailable"
 };
 
 export const enum QuestionType {

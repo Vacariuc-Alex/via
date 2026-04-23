@@ -364,8 +364,136 @@
     }
   }
 
+  .agent-input-border {
+    @apply p-px rounded-xl w-full mt-4;
+    background: linear-gradient(135deg, rgba(77, 238, 234, 0.45), rgba(123, 47, 247, 0.35));
+
+    .agent-input-panel {
+      @apply rounded-xl px-6 py-5 flex flex-col gap-5 max-sm:px-4 max-sm:py-4;
+      background: linear-gradient(180deg, rgba(8, 10, 16, 0.98), rgba(10, 12, 18, 0.94));
+      border: 1px solid rgba(77, 238, 234, 0.14);
+    }
+
+    .agent-input-copy {
+      @apply flex flex-col gap-3;
+    }
+
+    .agent-input-eyebrow {
+      @apply text-[11px] uppercase tracking-[0.3em] font-semibold;
+      color: rgba(77, 238, 234, 0.72);
+    }
+
+    .agent-input-title {
+      @apply mt-2 text-lg font-semibold;
+      color: rgba(255, 255, 255, 0.96);
+      text-shadow: 0 0 12px rgba(77, 238, 234, 0.12);
+    }
+
+    .agent-input-helper {
+      @apply text-sm leading-6;
+      color: rgba(205, 237, 255, 0.78);
+    }
+
+    .agent-active-prompt {
+      @apply rounded-xl px-4 py-3 flex flex-col gap-2;
+      background: rgba(77, 238, 234, 0.06);
+      border: 1px solid rgba(77, 238, 234, 0.18);
+      box-shadow: inset 0 0 16px rgba(77, 238, 234, 0.05);
+
+      span {
+        @apply text-[11px] uppercase tracking-[0.28em] font-semibold;
+        color: rgba(77, 238, 234, 0.7);
+      }
+
+      p {
+        @apply text-sm leading-6;
+        color: rgba(255, 255, 255, 0.92);
+        text-shadow: none;
+      }
+    }
+
+    .agent-text-form {
+      @apply flex flex-col gap-4;
+    }
+
+    .agent-textarea {
+      @apply w-full rounded-xl px-4 py-3 text-sm leading-6 resize-y min-h-30 outline-none transition-all duration-200;
+      color: rgba(255, 255, 255, 0.96);
+      background: rgba(7, 11, 20, 0.88);
+      border: 1px solid rgba(123, 47, 247, 0.28);
+      box-shadow: inset 0 0 14px rgba(123, 47, 247, 0.08);
+
+      &::placeholder {
+        color: rgba(182, 196, 220, 0.56);
+      }
+
+      &:focus {
+        border-color: rgba(77, 238, 234, 0.55);
+        box-shadow: 0 0 0 3px rgba(77, 238, 234, 0.12), inset 0 0 18px rgba(77, 238, 234, 0.05);
+      }
+
+      &:disabled {
+        @apply cursor-not-allowed;
+        opacity: 0.6;
+      }
+    }
+
+    .agent-text-actions {
+      @apply flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch;
+    }
+
+    .agent-text-status {
+      @apply text-xs uppercase tracking-[0.24em] font-semibold;
+      color: rgba(205, 237, 255, 0.6);
+    }
+  }
+
+  .agent-controls {
+    @apply w-full flex items-center justify-center gap-4 flex-wrap mt-6;
+  }
+
+  .agent-btn-submit {
+    @apply relative overflow-hidden px-6 py-3 font-bold text-xs uppercase tracking-[0.2em] text-white transition-all duration-300 rounded-lg cursor-pointer flex items-center justify-center min-w-36 max-sm:w-full;
+    background: linear-gradient(135deg, #7b2ff7 0%, #4deeea 100%);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 0 18px rgba(123, 47, 247, 0.35);
+
+    &:hover {
+      @apply scale-105;
+      box-shadow: 0 0 26px rgba(77, 238, 234, 0.35);
+      filter: brightness(1.08);
+    }
+
+    &.is-disabled,
+    &:disabled {
+      @apply pointer-events-none;
+      opacity: 0.45;
+      box-shadow: none;
+    }
+  }
+
+  .agent-btn-mode {
+    @apply relative overflow-hidden px-6 py-3 font-bold text-xs uppercase tracking-[0.2em] text-white transition-all duration-300 rounded-lg cursor-pointer flex items-center justify-center min-w-36 max-sm:w-full;
+    background: linear-gradient(135deg, rgba(77, 238, 234, 0.18) 0%, rgba(123, 47, 247, 0.85) 100%);
+    border: 1px solid rgba(77, 238, 234, 0.34);
+    box-shadow: 0 0 20px rgba(77, 238, 234, 0.18);
+
+    &:hover {
+      @apply scale-105;
+      box-shadow: 0 0 28px rgba(123, 47, 247, 0.32);
+      filter: brightness(1.08);
+    }
+
+    &.is-disabled,
+    &:disabled {
+      @apply pointer-events-none;
+      opacity: 0.5;
+      box-shadow: none;
+    }
+  }
+
   .agent-btn-call {
-    @apply relative overflow-hidden px-8 py-3 font-bold text-xs uppercase tracking-[0.2em] text-white transition-all duration-300 rounded-lg cursor-pointer flex items-center justify-center min-w-32;
+    @apply relative overflow-hidden px-8 py-3 font-bold text-xs uppercase tracking-[0.2em] text-white transition-all duration-300 rounded-lg cursor-pointer flex items-center justify-center min-w-32 max-sm:w-full;
     background: linear-gradient(135deg, #1df230 0%, #4deeea 100%);
     border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 0 20px rgba(29, 242, 48, 0.4);
@@ -383,7 +511,7 @@
   }
 
   .agent-btn-disconnect {
-    @apply relative overflow-hidden px-8 py-3 font-bold text-xs uppercase tracking-[0.2em] text-white transition-all duration-300 rounded-lg cursor-pointer flex items-center justify-center min-w-32;
+    @apply relative overflow-hidden px-8 py-3 font-bold text-xs uppercase tracking-[0.2em] text-white transition-all duration-300 rounded-lg cursor-pointer flex items-center justify-center min-w-32 max-sm:w-full;
     background: linear-gradient(135deg, #f75353 0%, #c44141 100%);
     border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 0 20px rgba(247, 83, 83, 0.4);
