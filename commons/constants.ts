@@ -1,5 +1,9 @@
 import { z } from "zod";
-import {InterviewFeedbackPromptParams, InterviewGenerationPromptParams} from "@/commons/types";
+import {
+  InterviewFeedbackPromptParams,
+  InterviewGenerationPromptParams,
+  InterviewPerformanceStats
+} from "@/commons/types";
 
 export const TECHSTACK_NORMALIZED_NAMES = {
   "react.js": "react",
@@ -318,4 +322,17 @@ export const SESSION_COOKIE_AGE = 60 * 60 * 24 * 7;
 
 export const SESSION_COOKIE_EXP = 60 * 60 * 24 * 7 * 1000;
 
-export const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+export const DATE_TIME_FORMAT = "YYYY-MM-DD HH:mm:ss"
+
+export const DATE_FORMAT = "YYYY-MM-DD";
+
+export const EMPTY_INTERVIEW_PERFORMANCE_STATS: InterviewPerformanceStats = {
+  completedInterviews: 0,
+  averageScore: 0,
+  highestScore: null,
+  latestScore: null,
+  latestInterviewDate: null,
+  recentScoreChange: null,
+  dailyAverageScores: [],
+};
+

@@ -2,16 +2,19 @@ import React from 'react'
 import Link from "next/link";
 import Image from "next/image";
 import InterviewCard from "@/components/InterviewCard/InterviewCard";
+import PerformanceDashboard from "@/components/Dashboard/PerformanceDashboard";
 import {getCurrentUser} from "@/features/service/auth";
 import {getInterviewsByUserId, getLatestInterviewsByOtherUsers} from "@/features/service/interview";
+import {getInterviewPerformanceStatsByUserId} from "@/features/service/feedback";
 
 const Page = async () => {
     const user = await getCurrentUser();
     const userId = user?.id || "";
 
-    const [usersInterviews, othersInterviews] = await Promise.all([
-        await getInterviewsByUserId(userId),
-        await getLatestInterviewsByOtherUsers({userId, limit: 20})
+    const [usersInterviews, othersInterviews, performanceStats] = await Promise.all([
+        getInterviewsByUserId(userId),
+        getLatestInterviewsByOtherUsers({userId, limit: 20}),
+        getInterviewPerformanceStatsByUserId(userId),
     ]);
 
     const hasUserPassedInterviews = usersInterviews && usersInterviews.length > 0;
@@ -38,7 +41,7 @@ const Page = async () => {
                 </div>
                 <div className="relative z-10 max-sm:hidden mr-4">
                     <div className="absolute -inset-10 bg-indigo-500/10 blur-[80px] rounded-full" />
-                    <div className="absolute inset-0 bg-cyan-500/5 blur-[40px] rounded-full" />
+                    <div className="absolute inset-0 bg-cyan-500/5 blur-2xl rounded-full" />
                     <Image
                         src="/robot.png"
                         alt="robo-dude"
@@ -48,14 +51,15 @@ const Page = async () => {
                     />
                 </div>
             </section>
+            <PerformanceDashboard stats={performanceStats} username={user?.username} />
             <section className="flex flex-col gap-6 mt-8">
                 <h2>Your Interviews</h2>
                 <div className="interview-section">
                     {
                         hasUserPassedInterviews ? (
-                            usersInterviews?.map((e, i) => (
-                                <InterviewCard key={i} {...e} />
-                            ))
+                            usersInterviews?.map((e) => e.id ? (
+                                <InterviewCard key={e.id} id={e.id} {...e} />
+                            ) : null)
                         ) : (
                             <p>You haven&#39;t taken any interview yet</p>
                         )
@@ -67,9 +71,9 @@ const Page = async () => {
                 <div className="interview-section">
                     {
                         hadOtherPassedInterviews ? (
-                            othersInterviews?.map((e, i) => (
-                                <InterviewCard key={i} {...e} />
-                            ))
+                            othersInterviews?.map((e) => e.id ? (
+                                <InterviewCard key={e.id} id={e.id} {...e} />
+                            ) : null)
                         ) : (
                             <p>There are no new interviews available</p>
                         )

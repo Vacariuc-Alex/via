@@ -51,6 +51,32 @@ export interface FeedbackDoc {
     createdAt: string,
 }
 
+//Dashboard related types
+export interface ScoreTrendPoint {
+    date: string;
+    averageScore: number;
+    attempts: number;
+}
+
+export interface InterviewPerformanceStats {
+    completedInterviews: number;
+    averageScore: number;
+    highestScore: number | null;
+    latestScore: number | null;
+    latestInterviewDate: string | null;
+    recentScoreChange: number | null;
+    dailyAverageScores: ScoreTrendPoint[];
+}
+
+export type PerformanceTrendChartProps = {
+    data: ScoreTrendPoint[];
+};
+
+export type PerformanceDashboardProps = {
+    stats: InterviewPerformanceStats;
+    username?: string | null;
+};
+
 //Transcript message related types
 export interface SavedTranscribedMessage {
     role: TranscriptMessage.ROLE_USER | TranscriptMessage.ROLE_ASSISTANT;
