@@ -7,18 +7,29 @@ import {DbDoc} from "@/commons/enums";
 import {InterviewDoc, InterviewGenerationPayload, InterviewGenerationPromptParams} from "@/commons/types";
 
 export async function POST(request: Request) {
-    const {type, role, level, techstack, amount, userId}: InterviewGenerationPayload = await request.json();
+    const payload = await request.json() as Partial<InterviewGenerationPayload>;
+    const {
+        type = "",
+        role = "",
+        level = "",
+        techstack = "",
+        amount = "",
+        userId = "",
+        locale
+    } = payload;
 
-    try{
+    try {
+        const prompt = await INTERVIEW_GENERATION_PROMPT({
+            role,
+            level,
+            techstack,
+            type,
+            amount
+        } satisfies InterviewGenerationPromptParams, locale);
+
         const {text} = await generateText({
             model: groq(AI_MODEL),
-            prompt: INTERVIEW_GENERATION_PROMPT({
-                role,
-                level,
-                techstack,
-                type,
-                amount
-            } satisfies InterviewGenerationPromptParams)
+            prompt
         });
 
         const parsed = JSON.parse(text) as { questions: string[]; technologies: string[] };

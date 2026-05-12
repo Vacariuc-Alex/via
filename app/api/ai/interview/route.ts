@@ -1,4 +1,4 @@
-import {InterviewDialogPayload, InterviewFeedbackPromptParams, FeedbackDoc} from "@/commons/types";
+import {FeedbackDoc, InterviewDialogPayload, InterviewFeedbackPromptParams} from "@/commons/types";
 import {generateObject} from "ai";
 import {groq} from "@ai-sdk/groq";
 import {AI_MODEL, FEEDBACK_SCHEMA, INTERVIEW_FEEDBACK_PROMPT} from "@/commons/constants";
@@ -7,20 +7,23 @@ import {DbDoc} from "@/commons/enums";
 import {formatInterviewQaPairs} from "@/commons/utils";
 
 export async function POST(request: Request) {
-    const {userId, interviewId, qa, role, level, type, technologies}: InterviewDialogPayload = await request.json();
+    const {userId, interviewId, qa, role, level, type, technologies, locale}: InterviewDialogPayload = await request.json();
     try {
         const transcript = formatInterviewQaPairs(qa);
+
+        const prompt = await INTERVIEW_FEEDBACK_PROMPT({
+            role,
+            level,
+            type,
+            technologies,
+            transcript,
+            locale
+        } satisfies InterviewFeedbackPromptParams, locale);
 
         const {object: feedbackText} = await generateObject({
             model: groq(AI_MODEL),
             schema: FEEDBACK_SCHEMA,
-            prompt: INTERVIEW_FEEDBACK_PROMPT({
-                role,
-                level,
-                type,
-                technologies,
-                transcript
-            } satisfies InterviewFeedbackPromptParams)
+            prompt
         });
 
         const feedbackDoc = {

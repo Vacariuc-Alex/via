@@ -2,65 +2,69 @@
 
 import React, {FormEvent, KeyboardEvent, useEffect, useRef, useState} from 'react';
 import {useRouter} from 'next/navigation';
+import {useLocale, useTranslations} from 'next-intl';
 import {createInterviewController} from '@/features/agent/orchestrator';
 import Image from 'next/image';
 import {cn} from '@/commons/utils';
 import {AgentMode, CallStatus, InterviewEvent, TranscriptMessage} from '@/commons/enums';
 import {AgentProps, AnswerInputMode, AnswerInputReadyPayload, FeedbackReadyPayload, SavedTranscribedMessage} from "@/commons/types";
+import {getLocalizedPath} from "@/features/translation/routing";
 
 type EditorView = "hidden" | "write" | "review";
 
-function getInputHelperText(callStatus: CallStatus, isVoiceInputAvailable: boolean, inputMode: AnswerInputMode, editorView: EditorView) {
+function getInputHelperText(callStatus: CallStatus, isVoiceInputAvailable: boolean, inputMode: AnswerInputMode, editorView: EditorView, t: any) {
     if (callStatus === CallStatus.ACTIVE) {
         if (editorView === "review") {
-            return "We captured your answer. Review or edit the transcript below, then continue when you're ready.";
+            return t('inputHelperReview');
         }
         if (inputMode === "write") {
-            return "Writing mode is active. When it's your turn, the interviewer will wait for you to type instead of listening.";
+            return t('inputHelperWritingMode');
         }
         if (isVoiceInputAvailable) {
-            return "Voice mode is active. Speak your answer, then review the transcript before the agent continues.";
+            return t('inputHelperVoiceMode');
         }
-        return "Voice input is not available here, so type your answers below to continue the interview.";
+        return t('inputHelperNoVoice');
     }
-    return "Start the interview to reply by voice or by typing below.";
+    return t('inputHelperInactive');
 }
 
-function getInputPlaceholder(callStatus: CallStatus, isAwaitingResponse: boolean, editorView: EditorView) {
+function getInputPlaceholder(callStatus: CallStatus, isAwaitingResponse: boolean, editorView: EditorView, t: any) {
     if (callStatus === CallStatus.ACTIVE) {
         if (editorView === "review") {
-            return "Adjust the transcript here before continuing the interview.";
+            return t('placeholderReview');
         }
         if (isAwaitingResponse) {
-            return "Type your answer here. Press Enter to send or Shift + Enter for a new line.";
+            return t('placeholderActive');
         }
-        return "Wait for the next question before sending your answer.";
+        return t('placeholderWaiting');
     }
-    return "Start the interview to unlock text answers.";
+    return t('placeholderInactive');
 }
 
-function getInputStatus(callStatus: CallStatus, isAwaitingResponse: boolean, inputMode: AnswerInputMode, editorView: EditorView) {
+function getInputStatus(callStatus: CallStatus, isAwaitingResponse: boolean, inputMode: AnswerInputMode, editorView: EditorView, t: any) {
     if (callStatus === CallStatus.ACTIVE) {
         if (editorView === "review") {
-            return "Review transcript";
+            return t('statusReview');
         }
         if (isAwaitingResponse) {
-            return inputMode === "write" ? "Writing mode" : "Listening for answer";
+            return inputMode === "write" ? t('statusWriting') : t('statusListening');
         }
-        return "Waiting for next prompt";
+        return t('statusWaiting');
     }
-    return "Interview inactive";
+    return t('statusInactive');
 }
 
-function getToggleButtonLabel(isToggleEnabled: boolean, inputMode: AnswerInputMode) {
+function getToggleButtonLabel(isToggleEnabled: boolean, inputMode: AnswerInputMode, t: any) {
     if (!isToggleEnabled) {
-        return "Switch to Writing";
+        return t('switchToWriting');
     }
-    return inputMode === "voice" ? "Switch to Writing" : "Switch to Voice";
+    return inputMode === "voice" ? t('switchToWriting') : t('switchToVoice');
 }
 
 export default function Agent({username, userId, interview, mode}: Readonly<AgentProps>) {
     const router = useRouter();
+    const locale = useLocale();
+    const t = useTranslations('interview');
     const controllerRef = useRef<ReturnType<typeof createInterviewController> | null>(null);
 
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
@@ -81,11 +85,11 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
     const isUserTurn = isUserSpeaking || (isAwaitingResponse && editorView === "write");
     const canTypeResponse = callStatus === CallStatus.ACTIVE && isAwaitingResponse && isResponseEditorVisible && !isSubmittingText;
     const canSubmitResponse = canTypeResponse && draftMessage.trim().length > 0;
-    const inputHelperText = getInputHelperText(callStatus, isVoiceInputAvailable, inputMode, editorView);
-    const inputPlaceholder = getInputPlaceholder(callStatus, isAwaitingResponse, editorView);
-    const inputStatus = getInputStatus(callStatus, isAwaitingResponse, inputMode, editorView);
+    const inputHelperText = getInputHelperText(callStatus, isVoiceInputAvailable, inputMode, editorView, t);
+    const inputPlaceholder = getInputPlaceholder(callStatus, isAwaitingResponse, editorView, t);
+    const inputStatus = getInputStatus(callStatus, isAwaitingResponse, inputMode, editorView, t);
     const isModeToggleDisabled = !isUserTurn || editorView === "review" || !isVoiceInputAvailable;
-    const toggleButtonLabel = getToggleButtonLabel(!isModeToggleDisabled, inputMode);
+    const toggleButtonLabel = getToggleButtonLabel(!isModeToggleDisabled, inputMode, t);
 
     useEffect(() => {
         return () => {
@@ -96,10 +100,10 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
 
     useEffect(() => {
         if (callStatus !== CallStatus.FINISHED) return;
-        if (mode !== AgentMode.INTERVIEW || isForcedDisconnect) {
-            router.push('/');
+        if (mode === AgentMode.GENERATE || isForcedDisconnect) {
+            router.push(getLocalizedPath("/", locale));
         }
-    }, [callStatus, isForcedDisconnect, mode, router]);
+    }, [callStatus, isForcedDisconnect, mode, router, locale]);
 
     function handleCall() {
         if (callStatus === CallStatus.CONNECTING) return;
@@ -116,7 +120,7 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
         setInputMode("voice");
         setEditorView("hidden");
 
-        const controller = createInterviewController(username, userId);
+        const controller = createInterviewController(username, userId, locale);
         controllerRef.current = controller;
 
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
@@ -136,7 +140,8 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
         const onUserListenStart = () => setIsUserSpeaking(true);
         const onUserListenEnd = () => setIsUserSpeaking(false);
         const onFeedbackReady = ({interviewId, feedbackId}: FeedbackReadyPayload) => {
-            router.push(`/interview/${interviewId}/feedback?feedbackId=${feedbackId}`);
+            const feedbackPath = getLocalizedPath(`/interview/${interviewId}/feedback`, locale);
+            router.push(`${feedbackPath}?feedbackId=${feedbackId}`);
         };
         const onAnswerInputReady = ({prompt, value, mode: nextMode, isReview}: AnswerInputReadyPayload) => {
             setIsAwaitingResponse(true);
@@ -245,7 +250,7 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
                             <Image src="/ai-avatar.svg" alt="avatar" width={65} height={54} className="object-contain" />
                         </div>
                     </div>
-                    <h3>AI Interviewer</h3>
+                    <h3>{t('aiInterviewer')}</h3>
                 </div>
                 <div className="agent-card-border">
                     <div className="agent-card-content">
@@ -273,11 +278,12 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
                     <div className="agent-input-panel">
                         <div className="agent-input-copy">
                             <div>
-                                <span className="agent-input-eyebrow">{editorView === "review" ? "Transcript review" : "Writing mode"}</span>
+                                <span className="agent-input-eyebrow">{editorView === "review" ? t('transcriptReview') : t('writingMode')}</span>
                                 <h4 className="agent-input-title">
                                     {editorView === "review"
-                                        ? "Review your answer before the interview continues"
-                                        : "Type your answer while the interviewer waits"}
+                                        ? t('reviewBeforeContinue')
+                                        : t('typeWhileWaits')
+                                    }
                                 </h4>
                             </div>
                             <p className="agent-input-helper">
@@ -285,7 +291,7 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
                             </p>
                             {activePrompt && (
                                 <div className="agent-active-prompt">
-                                    <span>Current prompt</span>
+                                    <span>{t('currentPrompt')}</span>
                                     <p>{activePrompt}</p>
                                 </div>
                             )}
@@ -303,7 +309,7 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
                             <div className="agent-text-actions">
                                 <span className="agent-text-status">{inputStatus}</span>
                                 <button type="submit" className={cn('agent-btn-submit', !canSubmitResponse && 'is-disabled')} disabled={!canSubmitResponse}>
-                                    {isSubmittingText ? 'Continuing...' : editorView === "review" ? 'Continue Interview' : 'Send Answer'}
+                                    {isSubmittingText ? t('continuing') : editorView === "review" ? t('continueInterview') : t('sendAnswer')}
                                 </button>
                             </div>
                         </form>
@@ -328,12 +334,12 @@ export default function Agent({username, userId, interview, mode}: Readonly<Agen
                             callStatus !== CallStatus.CONNECTING && "hidden"
                         )} />
                         <span className="relative z-10">
-                            {callStatus === CallStatus.CONNECTING ? "Connecting..." : "Start Interview"}
+                            {callStatus === CallStatus.CONNECTING ? t('connecting') : t('startInterview')}
                         </span>
                     </button>
                 ) : (
                     <button className="agent-btn-disconnect group" onClick={handleDisconnect}>
-                        <span className="relative z-10">End Interview</span>
+                        <span className="relative z-10">{t('endInterview')}</span>
                     </button>
                 )}
             </div>

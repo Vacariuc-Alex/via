@@ -135,6 +135,7 @@ export type InterviewGenerationPromptParams = Pick<InterviewDoc, "role" | "level
 
 export type InterviewFeedbackPromptParams = Pick<InterviewDoc, "role" | "level" | "type" | "technologies"> & {
     transcript: string;
+    locale?: string;
 };
 
 export interface AgentParams {
@@ -156,11 +157,18 @@ export interface InterviewQaPair {
 export type InterviewDialogPayload = Pick<InterviewDoc, "userId" | "role" | "level" | "type" | "technologies"> & {
     interviewId: string;
     qa: InterviewQaPair[];
+    locale?: string;
 };
 
 export type InterviewGenerationPayload = {
     userId: string;
-} & Record<string, string>;
+    role: string;
+    type: string;
+    level: string;
+    techstack: string;
+    amount: string;
+    locale?: string;
+};
 
 export interface FeedbackReadyPayload {
     interviewId: string;

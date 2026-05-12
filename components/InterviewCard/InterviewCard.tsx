@@ -1,22 +1,26 @@
 import dayjs from "dayjs"
 import Image from "next/image";
 import Link from "next/link";
+import {getLocale, getTranslations} from "next-intl/server";
 import DisplayTechIcons from "@/components/InterviewCard/DisplayTechIcons";
 import {DATE_TIME_FORMAT} from "@/commons/constants";
-import {FeedbackDoc, InterviewCardProps} from "@/commons/types";
-import {normalizeInterviewType} from "@/commons/utils";
+import {InterviewCardProps} from "@/commons/types";
+import {getInterviewTypeDisplayLabel} from "@/commons/utils";
 import {getCurrentUser} from "@/features/service/auth";
 import {getLatestFeedbackByUserIdAndInterviewId} from "@/features/service/feedback";
+import {getLocalizedPath} from "@/features/translation/routing";
 
 const InterviewCard = async ({id: interviewId, role, type, technologies, coverImage, createdAt}: InterviewCardProps) => {
+    const t = await getTranslations("interviewCard");
+    const locale = await getLocale();
     const user = await getCurrentUser();
     const userId = user?.id ?? "";
 
-    const feedback = await getLatestFeedbackByUserIdAndInterviewId(userId, interviewId) as FeedbackDoc | null;
+    const feedback = await getLatestFeedbackByUserIdAndInterviewId(userId, interviewId);
     const feedbackId = feedback?.id;
 
-    const normalizedType = normalizeInterviewType(type);
-    const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now() ).format(DATE_TIME_FORMAT);
+    const normalizedType = await getInterviewTypeDisplayLabel(type, locale);
+    const formattedDate = dayjs(feedback?.createdAt || createdAt || Date.now()).format(DATE_TIME_FORMAT);
 
     return (
         <div className="interview-card-container w-[360px] max-sm:w-full">
@@ -24,15 +28,15 @@ const InterviewCard = async ({id: interviewId, role, type, technologies, coverIm
                 <div className="interview-badge">
                     {normalizedType}
                 </div>
-                <div className="interview-card-pattern opacity-15 absolute inset-0 pointer-events-none" />
+                <div className="interview-card-pattern opacity-15 absolute inset-0 pointer-events-none"/>
                 <div className="relative z-10">
-                        <Image
-                            src={coverImage}
-                            alt="cover image"
-                            className="rounded-full object-cover bg-dark-300 min-w-[90px] max-w-[90px] min-h-[90px] max-h-[90px] mb-5"
-                        />
+                    <Image
+                        src={coverImage}
+                        alt="cover image"
+                        className="rounded-full object-cover bg-dark-300 min-w-[90px] max-w-[90px] min-h-[90px] max-h-[90px] mb-5"
+                    />
                     <h3 className="interview-text-title capitalize">
-                        {role} Interview
+                        {role} {t("interviewSuffix")}
                     </h3>
                     <div className="flex items-center gap-4 text-sm text-light-100/80 mb-4">
                         <div className="flex items-center gap-2">
@@ -47,7 +51,7 @@ const InterviewCard = async ({id: interviewId, role, type, technologies, coverIm
                         </div>
                     </div>
                     <p className="text-sm leading-relaxed text-light-100/70 line-clamp-3 mb-6">
-                        {feedback?.feedback.finalAssessment || "The system is ready for evaluation. Start the simulation to analyze your performance dimensions."}
+                        {feedback?.feedback.finalAssessment || t("defaultAssessment")}
                     </p>
                 </div>
                 <div className="mt-auto flex flex-row justify-between items-center z-10 gap-2">
@@ -56,11 +60,14 @@ const InterviewCard = async ({id: interviewId, role, type, technologies, coverIm
                     </div>
                     <div className="relative group">
                         <Link
-                            href={feedback ? `/interview/${interviewId}/feedback?feedbackId=${feedbackId}` : `/interview/${interviewId}`}
+                            href={feedback
+                                ? `${getLocalizedPath(`/interview/${interviewId}/feedback`, locale)}?feedbackId=${feedbackId}`
+                                : getLocalizedPath(`/interview/${interviewId}`, locale)
+                            }
                             className="interview-btn"
                         >
                             <span className="relative z-10 flex items-center gap-2">
-                                {feedback ? "Check" : "Start"}
+                                {feedback ? t("check") : t("start")}
                                 <span className="text-[10px] opacity-50">▶</span>
                             </span>
                         </Link>

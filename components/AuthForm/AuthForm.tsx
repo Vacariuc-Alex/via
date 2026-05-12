@@ -9,6 +9,7 @@ import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import {toast} from "sonner";
+import {useLocale, useTranslations} from 'next-intl';
 import FormField from "@/components/AuthForm/FormField";
 import {useRouter} from "next/navigation";
 import {createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
@@ -16,6 +17,7 @@ import {auth} from "@/integrations/firebase/client";
 import {signIn, signUp} from "@/features/service/auth";
 import {FormTypeParams} from "@/commons/types";
 import {AuthStatus} from "@/commons/enums";
+import {getLocalizedPath} from "@/features/translation/routing";
 
 const authFormSchema = (type: AuthStatus) => {
     return z.object({
@@ -27,6 +29,9 @@ const authFormSchema = (type: AuthStatus) => {
 
 const AuthForm = ({type}: FormTypeParams) => {
     const router = useRouter();
+    const locale = useLocale();
+    const t = useTranslations('auth');
+    const tCommon = useTranslations('common');
     const formSchema = authFormSchema(type);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -45,12 +50,12 @@ const AuthForm = ({type}: FormTypeParams) => {
                 const userCredentials = await signInWithEmailAndPassword(auth, email, password);
                 const idToken = await userCredentials.user.getIdToken();
                 if(!idToken) {
-                    toast.error("Failed to sign in!");
+                    toast.error(t('signInError'));
                     return;
                 }
                 await signIn({email, idToken});
-                toast.success("You have successfully logged in!");
-                router.push("/");
+                toast.success(t('signInSuccess'));
+                router.push(getLocalizedPath("/", locale));
             } else {
                 const {name, email, password} = values;
                 const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
@@ -64,14 +69,14 @@ const AuthForm = ({type}: FormTypeParams) => {
                     toast.error(result?.message);
                     return;
                 }
-                toast.success("Account created successfully!");
-                router.push("/sign-in");
+                toast.success(t('signUpSuccess'));
+                router.push(getLocalizedPath("/sign-in", locale));
             }
         } catch (error: any) {
             if (error.code === "auth/invalid-credential" || error.code === "auth/wrong-password") {
-                toast.error("Email or password is incorrect!");
+                toast.error(t('invalidCredentials'));
             } else {
-                toast.error("Unexpected error has occurred.");
+                toast.error(t('unexpectedError'));
             }
             console.error(error);
         }
@@ -82,20 +87,20 @@ const AuthForm = ({type}: FormTypeParams) => {
             <div className="flex flex-col gap-6 auth-card py-14 px-10">
                 <div className="flex flex-row gap-2 justify-center">
                     <Image src="/logo.svg" alt="logo" height={32} width={38}/>
-                    <h2 className="text-primary-100">Virtual Interview Assistant</h2>
+                    <h2 className="text-primary-100">{tCommon('appTitle')}</h2>
                 </div>
-                <h3>Practice job interview with AI</h3>
+                <h3>{tCommon('appSubtitle')}</h3>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 mt-4 auth-form">
-                        {!isSignIn && (<FormField control={form.control} name="name" label="Name" placeholder="Your name"/>)}
-                        <FormField control={form.control} name="email" label="Email" placeholder="Your email address" type="email"/>
-                        <FormField control={form.control} name="password" label="Password" placeholder="Your password" type="password"/>
-                        <Button className="btn" type="submit">{isSignIn ? "Sign in" : "Create an account"}</Button>
+                        {!isSignIn && (<FormField control={form.control} name="name" label={t('name')} placeholder={t('yourName')}/>)}
+                        <FormField control={form.control} name="email" label={t('email')} placeholder={t('yourEmail')} type="email"/>
+                        <FormField control={form.control} name="password" label={t('password')} placeholder={t('yourPassword')} type="password"/>
+                        <Button className="btn" type="submit">{isSignIn ? t('signIn') : t('createAccount')}</Button>
                     </form>
                 </Form>
                 <p className="text-center">
-                    {isSignIn ? "Create a new account? " : "Already have an account? "}
-                    <Link href={isSignIn ? "/sign-up" : "/sign-in"} className="underline font-bold text-user-primary ml-l"> {isSignIn ? "Sign up" : "Sign in"}</Link>
+                    {isSignIn ? t('createNewAccount') : t('alreadyHaveAccount')}
+                    <Link href={getLocalizedPath(isSignIn ? "/sign-up" : "/sign-in", locale)} className="underline font-bold text-user-primary ml-l"> {isSignIn ? t('signUp') : t('signIn')}</Link>
                 </p>
             </div>
         </div>
