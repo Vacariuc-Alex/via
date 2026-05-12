@@ -1,7 +1,7 @@
 import {generateInterviewWorkflow, ongoingInterviewWorkflow} from '@/features/agent/workflows';
 import {submitGenerateAnswersToAi, submitInterviewAnswersToAi} from '@/integrations/gpt/client';
 import {getSpeechRecognition} from "@/integrations/stt/speechRecognition";
-import {load, speak, stopSpeaking} from '@/integrations/tts/puterConfig';
+import {load, speak, stopSpeaking} from '../../integrations/tts/elevenLabsConfig';
 import {createEventEmitter} from './eventEmitter';
 import {createStateMachine} from '@/features/agent/stateMachine';
 import {

@@ -214,8 +214,8 @@ export const INTERVIEW_COVERS = [
 
 export const VOICE_AGENT_PROPS = {
   provider: 'elevenlabs',
-  voice: 'Xb7hH8MSUJpSbSDYk0k2',
-  model: 'eleven_multilingual_v2'
+  voice: 'XrExE9yKIg1WjnnlVkGX',
+  model: 'eleven_flash_v2_5'
 };
 
 export const UNRECOGNIZED_SPEECH_ERROR_MESSAGES = [

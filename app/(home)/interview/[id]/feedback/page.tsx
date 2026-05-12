@@ -72,8 +72,8 @@ const Page = async ({params, searchParams}: RouteParams) => {
             <div className="flex flex-col gap-4">
                 <h2>Breakdown of the Interview:</h2>
                 {feedback.feedback.categoryScores.map((e: any, i: any) => (
-                    <div key={`${e.name}-${e.score}-${i}`}>
-                        <p className="text-highlight font-bold">
+                    <div key={i}>
+                        <p className="text-breakdown-section font-bold">
                             {i + 1}. {e.name} ({e.score}/100)
                         </p>
                         <p>

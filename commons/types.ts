@@ -1,7 +1,7 @@
 //User related types
+import type {AgentMode} from "@/commons/enums";
 import {AuthStatus, InterviewDocFields, QuestionType, TranscriptMessage} from "@/commons/enums";
 import {Control, FieldValues, Path} from "react-hook-form";
-import type {AgentMode} from "@/commons/enums";
 
 //User related types
 export interface UserDoc {
@@ -102,7 +102,7 @@ export interface TechIconProps {
     technologies: string[];
 };
 
-export interface AgentProps{
+export interface AgentProps {
     userId: string;
     username: string;
     interview?: InterviewDoc;
@@ -194,4 +194,12 @@ export type AiAnswersResponse = {
     success: boolean;
     feedbackId: string;
     error?: string;
+};
+
+export type ElevenLabsTranscribeResponse = {
+    text?: string;
+};
+
+export type RecognitionResultEvent = {
+    results: [[{ transcript: string }]];
 };
