@@ -7,20 +7,24 @@ import Image from "next/image";
 import Agent from "@/components/Agent/Agent";
 import {getCurrentUser} from "@/features/service/auth";
 import {AgentMode} from "@/commons/enums";
-import {normalizeInterviewType} from "@/commons/utils";
+import {getInterviewTypeDisplayLabel} from "@/commons/utils";
+import {getLocale, getTranslations} from "next-intl/server";
+import {getLocalizedPath} from "@/features/translation/routing";
 
 const Page = async ({params}: RouteParams) => {
+    const t = await getTranslations("interview");
+    const locale = await getLocale();
     const resolvedParams = await params;
 
     const interviewId = resolvedParams?.id;
     const interview = interviewId && await getInterviewById(interviewId);
-    const normalizedType = interview && normalizeInterviewType(interview?.type);
+    const normalizedType = interview && await getInterviewTypeDisplayLabel(interview?.type, locale);
 
     const user = await getCurrentUser();
     const userId = user?.id ?? "";
-    const username = user?.username ?? "Fellow User";
+    const username = user?.username ?? t("fellowUser");
 
-    if(!interview || !user) redirect('/');
+    if (!interview || !user) redirect(getLocalizedPath("/", locale));
 
     return (
         <>

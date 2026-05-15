@@ -1,23 +1,34 @@
 import {InterviewDocFields, QuestionType} from "@/commons/enums";
 import {State} from "@/commons/types";
+import {backendTranslationKeys, getBackendTranslation} from "../translation/utils/clientTranslations";
 
-export function generateInterviewWorkflow(username: string): State[] {
+export async function generateInterviewWorkflow(username: string, locale?: string): Promise<State[]> {
+    const {workflow} = backendTranslationKeys.interview;
+    const greeting = await getBackendTranslation(locale, workflow.generateGreeting, {username});
+    const roleQuestion = await getBackendTranslation(locale, workflow.generateRoleQuestion);
+    const typeQuestion = await getBackendTranslation(locale, workflow.generateTypeQuestion);
+    const levelQuestion = await getBackendTranslation(locale, workflow.generateLevelQuestion);
+    const techstackQuestion = await getBackendTranslation(locale, workflow.generateTechstackQuestion);
+    const amountQuestion = await getBackendTranslation(locale, workflow.generateAmountQuestion);
+
     return [
-        { type: QuestionType.SAY, text: `Hello, ${username}! Let's prepare your interview. I'll ask you a few questions and generate a perfect interview just for you. Let's begin!`},
-        { type: QuestionType.ASK, id: InterviewDocFields.ROLE, text: "What role would you like to train for?" },
-        { type: QuestionType.ASK, id: InterviewDocFields.TYPE, text: "Are you aiming for a technical, behavioral or mixed interview?" },
-        { type: QuestionType.ASK, id: InterviewDocFields.LEVEL, text: "Tell me your job experience level." },
-        { type: QuestionType.ASK, id: InterviewDocFields.TECHSTACK, text: "What are the technologies you'd like to cover during the job interview?" },
-        { type: QuestionType.ASK, id: InterviewDocFields.AMOUNT, text: "How many questions would you like me to prepare for you?" },
-        { type: QuestionType.END }
+        {type: QuestionType.SAY, text: greeting},
+        {type: QuestionType.ASK, id: InterviewDocFields.ROLE, text: roleQuestion},
+        {type: QuestionType.ASK, id: InterviewDocFields.TYPE, text: typeQuestion},
+        {type: QuestionType.ASK, id: InterviewDocFields.LEVEL, text: levelQuestion},
+        {type: QuestionType.ASK, id: InterviewDocFields.TECHSTACK, text: techstackQuestion},
+        {type: QuestionType.ASK, id: InterviewDocFields.AMOUNT, text: amountQuestion},
+        {type: QuestionType.END}
     ];
 }
 
-export function ongoingInterviewWorkflow(username: string, questions: string[]): State[] {
+export async function ongoingInterviewWorkflow(username: string, questions: string[], locale?: string): Promise<State[]> {
+    const greeting = await getBackendTranslation(locale, backendTranslationKeys.interview.workflow.interviewGreeting, {username});
+
     return [
         {
             type: QuestionType.SAY,
-            text: `Hello, ${username}! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.`,
+            text: greeting,
         } satisfies State,
         ...questions.map((e) => ({
             type: QuestionType.ASK,

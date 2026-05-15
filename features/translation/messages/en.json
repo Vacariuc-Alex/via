@@ -1,0 +1,170 @@
+{
+  "common": {
+    "appTitle": "Virtual Interview Assistant",
+    "appSubtitle": "Practice job interview with AI"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "createAccount": "Create an account",
+    "createNewAccount": "Create a new account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "yourName": "Your name",
+    "yourEmail": "Your email address",
+    "yourPassword": "Your password",
+    "signInSuccess": "You have successfully logged in!",
+    "signInError": "Failed to sign in!",
+    "signUpSuccess": "Account created successfully!",
+    "invalidCredentials": "Email or password is incorrect!",
+    "unexpectedError": "Unexpected error has occurred."
+  },
+  "home": {
+    "bannerTitle": "Get Interview-Ready with",
+    "bannerHighlight": "AI-Powered",
+    "bannerSubtitle": "Practice",
+    "bannerDescription": "Practice on real interview questions & get instant feedback",
+    "startInterview": "Start an Interview",
+    "yourInterviews": "Your Interviews",
+    "noInterviewsTaken": "You haven''t taken any interview yet",
+    "takeInterview": "Take an Interview",
+    "noNewInterviews": "There are no new interviews available"
+  },
+  "dashboard": {
+    "title": "Performance Dashboard",
+    "heading": "here is your interview snapshot.",
+    "headingNoName": "Your interview snapshot is ready.",
+    "description": "These statistics count every interview attempt with feedback, and the chart tracks your average score on each day you took interviews.",
+    "descriptionNoStats": "Finish an interview and generate feedback to unlock your personal score trends here.",
+    "startPracticing": "Start practicing",
+    "noScoredInterviews": "No scored interviews yet.",
+    "noScoredInterviewsDesc": "Once you complete an interview and receive feedback, this dashboard will show your average score, strongest result, latest performance, score momentum, and your day-by-day average trend.",
+    "stats": {
+      "interviewAttempts": "Interview attempts with feedback",
+      "interviewAttemptsDesc": "Every interview attempt with generated feedback is counted.",
+      "bestScore": "Best score",
+      "bestScoreDesc": "Your highest score across all passed interview attempts.",
+      "latestScore": "Latest score",
+      "lastInterview": "Last passed interview",
+      "lastInterviewDesc": "Date and time of your most recent interview attempt.",
+      "trackedDays": "Tracked days",
+      "trackedDaysDesc": "Number of calendar days included in your daily average score.",
+      "noScoredInterview": "No scored interview yet",
+      "notAvailable": "N/A"
+    },
+    "metrics": {
+      "averageScore": "Average score",
+      "momentum": "Momentum",
+      "momentumMessage": "Add one more scored interview to unlock momentum.",
+      "momentumUp": "Up by {points} points from your previous result.",
+      "momentumDown": "Down by {points} points from your previous result.",
+      "momentumSteady": "Holding steady compared with your previous result."
+    },
+    "chart": {
+      "dailyAverageScore": "Daily average score",
+      "averageInterviewScoreEachDay": "Average interview score for each day.",
+      "trackedDays": "Tracked days",
+      "lineChartTitle": "Line chart showing average score by day",
+      "emptyState": "Complete scored interviews on different days to see your average score trend line here.",
+      "acrossAttempts": "across {attempts, plural, one {# interview} other {# interviews}}"
+    }
+  },
+  "interviewCard": {
+    "interviewSuffix": "Interview",
+    "defaultAssessment": "The system is ready for evaluation. Start the simulation to analyze your performance dimensions.",
+    "check": "Check",
+    "start": "Start"
+  },
+  "interview": {
+    "generation": "Interview Generation",
+    "inputHelperReview": "We captured your answer. Review or edit the transcript below, then continue when you''re ready.",
+    "inputHelperWritingMode": "Writing mode is active. When it''s your turn, the interviewer will wait for you to type instead of listening.",
+    "inputHelperVoiceMode": "Voice mode is active. Speak your answer, then review the transcript before the agent continues.",
+    "inputHelperNoVoice": "Voice input is not available here, so type your answers below to continue the interview.",
+    "inputHelperInactive": "Start the interview to reply by voice or by typing below.",
+    "placeholderReview": "Adjust the transcript here before continuing the interview.",
+    "placeholderActive": "Type your answer here. Press Enter to send or Shift + Enter for a new line.",
+    "placeholderWaiting": "Wait for the next question before sending your answer.",
+    "placeholderInactive": "Start the interview to unlock text answers.",
+    "statusReview": "Review transcript",
+    "statusWriting": "Writing mode",
+    "statusListening": "Listening for answer",
+    "statusWaiting": "Waiting for next prompt",
+    "statusInactive": "Interview inactive",
+    "switchToWriting": "Switch to Writing",
+    "switchToVoice": "Switch to Voice",
+    "transcriptReview": "Transcript review",
+    "writingMode": "Writing mode",
+    "reviewBeforeContinue": "Review your answer before the interview continues",
+    "typeWhileWaits": "Type your answer while the interviewer waits",
+    "aiInterviewer": "AI Interviewer",
+    "currentPrompt": "Current prompt",
+    "continuing": "Continuing...",
+    "continueInterview": "Continue Interview",
+    "sendAnswer": "Send Answer",
+    "connecting": "Connecting...",
+    "startInterview": "Start Interview",
+    "endInterview": "End Interview",
+    "fellowUser": "Fellow User",
+    "workflow": {
+      "generateGreeting": "Hello, {username}! Let''s prepare your interview. I''ll ask you a few questions and generate a perfect interview just for you. Let''s begin!",
+      "generateRoleQuestion": "What role would you like to train for?",
+      "generateTypeQuestion": "Are you aiming for a technical, behavioral or mixed interview?",
+      "generateLevelQuestion": "Tell me your job experience level.",
+      "generateTechstackQuestion": "What are the technologies you''d like to cover during the job interview?",
+      "generateAmountQuestion": "How many questions would you like me to prepare for you?",
+      "interviewGreeting": "Hello, {username}! Thank you for taking the time to speak with me today. I''m excited to learn more about you and your experience.",
+      "finalGenerateMessage": "Thank you for your answers, the interview will be generated in a couple of seconds!",
+      "finalInterviewMessage": "Thank you for your time and discussion, we''ll carefully analyze your responses and come with a feedback as soon as possible. Thank You!",
+      "finalErrorMessage": "It looks like there are connection issues. Unfortunately, we need to end this call.",
+      "unrecognizedSpeech": [
+        "I''m sorry, I didn''t catch your answer. Could you please repeat?",
+        "I still couldn''t hear your response. Please try speaking clearly.",
+        "I''m still not hearing a response from you."
+      ],
+      "undetectedAudio": [
+        "It seems I''m having trouble accessing your microphone. Could you please check it?",
+        "I still cannot hear you. Please make sure your microphone is enabled.",
+        "Your microphone may be muted or unavailable."
+      ]
+    },
+    "prompts": {
+      "generation": {
+        "template": "{languageInstruction}\nPrepare questions for a job interview.\nThe job role is {role}.\nThe job experience level is {level}.\nThe user described the tech stack in natural language as: {techstack}.\nThe focus between behavioural and technical questions should lean towards: {type}.\nThe amount of questions required is: {amount}.\n\nYour task:\n1) Extract only the technology names that the user mentioned and ignore all filler or noise words.\n2) Generate interview questions aligned to the extracted technologies.\n\nOutput requirements:\n- Return ONLY valid JSON.\n- No markdown, no code fences, no extra text.\n- JSON shape must be exactly:\n  {\"questions\": [\"Question 1\", \"Question 2\"], \"technologies\": [\"java\", \"spring boot\", \"sql\"]}\n\nAdditional constraints:\n- The questions are going to be read by a voice assistant so do not use slash, asterisk, or any other special characters which might break voice assistant reading.",
+        "languageInstruction": "Generate all interview questions in English language."
+      },
+      "feedback": {
+        "template": "{languageInstruction}\nYou are an expert technical interviewer and career coach. You are also an AI interviewer analyzing a mock interview.\nYour task is to evaluate the candidate based on structured categories.\nBe thorough and detailed in your analysis. Do not be lenient with the candidate.\n\nContext about this interview:\n- Role: {role}\n- Level: {level}\n- Interview focus: {type}\n- Tech stack: {technologies}\n\nBelow is the interview transcript as question and answer pairs:\n--- TRANSCRIPT START ---\n{transcript}\n--- TRANSCRIPT END ---\n\nTask: Provide concise, actionable feedback tailored to the role, level, type, and tech stack above.\n\nIMPORTANT OUTPUT RULES:\n- Return ONLY valid JSON. No markdown, no code fences, no extra text.\n- The JSON MUST strictly match this shape:\n  {\n    \"totalScore\": 0,\n    \"categoryScores\": [\n      {\"name\": \"Communication Skills\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Technical Knowledge\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Problem Solving\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Cultural Fit\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Confidence and Clarity\", \"score\": 0, \"comment\": \"...\"}\n    ],\n    \"strengths\": [\"...\"],\n    \"areasForImprovement\": [\"...\"],\n    \"finalAssessment\": \"...\"\n  }\n- Do NOT rename category names. Use EXACTLY these strings:\n  \"Communication Skills\", \"Technical Knowledge\", \"Problem Solving\", \"Cultural Fit\", \"Confidence and Clarity\".\n- Do NOT add, remove, reorder, or nest categories.\n\nScoring guidance:\n- Communication Skills: clarity, articulation, and structured responses.\n- Technical Knowledge: understanding of key concepts for the role.\n- Problem Solving: ability to analyze problems and propose solutions.\n- Cultural Fit: alignment with role expectations and collaboration.\n- Confidence and Clarity: confidence in responses, engagement, and clarity.\n\nAdditional rules:\n- Base feedback only on the transcript.\n- If information is missing, say what is missing and how it impacted the evaluation.\n- Be professional, direct, and constructive.",
+        "languageInstruction": "Return all feedback comments, strengths, areas for improvement, and final assessment in English language."
+      }
+    },
+    "interviewTypes": {
+      "mixed": "Mixed",
+      "technical": "Technical",
+      "behavioral": "Behavioral"
+    },
+    "feedback": {
+      "title": "Feedback on the Interview - ",
+      "interview": "Interview",
+      "overallImpression": "Overall Impression:",
+      "breakdownOfInterview": "Breakdown of the Interview:",
+      "strengths": "Strengths",
+      "areasForImprovement": "Areas for Improvement",
+      "backToDashboard": "Back to dashboard",
+      "retakeInterview": "Retake Interview",
+      "back": "Back",
+      "next": "Next",
+      "attemptOf": "Attempt {current} of {total}",
+      "notAvailable": "N/A",
+      "categoryNames": {
+        "Communication Skills": "Communication Skills",
+        "Technical Knowledge": "Technical Knowledge",
+        "Problem Solving": "Problem Solving",
+        "Cultural Fit": "Cultural Fit",
+        "Confidence and Clarity": "Confidence and Clarity"
+      }
+    }
+  }
+}

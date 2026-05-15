@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description: "An Al-powered platform for preparing for mock interviews",
 };
 
-export default function RootLayout({children,}: Readonly<{ children: React.ReactNode; }>) {
+export default function RootLayout({children}: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" className="dark">
             <body className={`${monaSans.className} antialiased pattern`}>

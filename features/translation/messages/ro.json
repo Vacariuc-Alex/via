@@ -1,0 +1,170 @@
+{
+  "common": {
+    "appTitle": "Asistent Virtual pentru Interviuri",
+    "appSubtitle": "Practică interviuri cu ajutorul AI"
+  },
+  "auth": {
+    "signIn": "Conectare",
+    "signUp": "Înregistrare",
+    "createAccount": "Creați un cont",
+    "createNewAccount": "Creați un cont nou?",
+    "alreadyHaveAccount": "Aveți deja un cont?",
+    "name": "Nume",
+    "email": "Email",
+    "password": "Parolă",
+    "yourName": "Numele dvs.",
+    "yourEmail": "Adresa dvs. de email",
+    "yourPassword": "Parola dvs.",
+    "signInSuccess": "Sunteți conectat cu succes!",
+    "signInError": "Conectarea a eșuat!",
+    "signUpSuccess": "Cont creat cu succes!",
+    "invalidCredentials": "Emailul sau parola sunt incorecte!",
+    "unexpectedError": "A apărut o eroare neașteptată."
+  },
+  "home": {
+    "bannerTitle": "Pregătiți-vă pentru interviuri cu",
+    "bannerHighlight": "Practică propulsată de AI",
+    "bannerSubtitle": "Practică",
+    "bannerDescription": "Practică cu întrebări din interviuri reale și primiți feedback instant",
+    "startInterview": "Începeți un interviu",
+    "yourInterviews": "Interviurile dvs.",
+    "noInterviewsTaken": "Nu ați efectuat încă niciun interviu",
+    "takeInterview": "Efectuați un interviu",
+    "noNewInterviews": "Nu sunt disponibile interviuri noi"
+  },
+  "dashboard": {
+    "title": "Tabloul de performanță",
+    "heading": "iată o privire de ansamblu asupra interviurilor dvs.",
+    "headingNoName": "Demonstrația dvs. de interviu este gata.",
+    "description": "Aceste statistici numără fiecare tentativă de interviu cu feedback, iar graficul urmărește scorul mediu zilnic al interviurilor pe care le-ați efectuat.",
+    "descriptionNoStats": "Finalizați un interviu și generați feedback pentru a debloca tendințele de punctaj personal aici.",
+    "startPracticing": "Începeți să practicați",
+    "noScoredInterviews": "Niciun interviu cu punctaj încă.",
+    "noScoredInterviewsDesc": "După ce finalizați un interviu și primiți feedback, acest tablou de bord va afișa scorul mediu, cel mai bun rezultat, performanța recentă, impulsul punctajului și tendința medie zilnică.",
+    "stats": {
+      "interviewAttempts": "Tentative de interviu cu feedback",
+      "interviewAttemptsDesc": "Fiecare tentativă de interviu cu feedback generat este numărată.",
+      "bestScore": "Cel mai bun scor",
+      "bestScoreDesc": "Cel mai înalt scor din toate tentativele de interviu reușite.",
+      "latestScore": "Cel mai recent scor",
+      "lastInterview": "Ultimul interviu trecut",
+      "lastInterviewDesc": "Data și ora celei mai recente tentative de interviu.",
+      "trackedDays": "Zile urmărite",
+      "trackedDaysDesc": "Numărul de zile calendaristice incluse în scorul mediu zilnic.",
+      "noScoredInterview": "Niciun interviu cu punctaj încă",
+      "notAvailable": "N/A"
+    },
+    "metrics": {
+      "averageScore": "Scor mediu",
+      "momentum": "Impuls",
+      "momentumMessage": "Efectuați încă un interviu cu punctaj pentru a debloca impulsul.",
+      "momentumUp": "În sus cu {points} puncte de la rezultatul anterior.",
+      "momentumDown": "În jos cu {points} puncte de la rezultatul anterior.",
+      "momentumSteady": "Stabil comparativ cu rezultatul anterior."
+    },
+    "chart": {
+      "dailyAverageScore": "Scor mediu zilnic",
+      "averageInterviewScoreEachDay": "Scorul mediu al interviurilor pentru fiecare zi.",
+      "trackedDays": "Zile urmărite",
+      "lineChartTitle": "Grafic liniar cu scorul mediu pe zi",
+      "emptyState": "Finalizează interviuri cu punctaj în zile diferite pentru a vedea evoluția scorului mediu aici.",
+      "acrossAttempts": "din {attempts, plural, one {# interviu} few {# interviuri} other {# de interviuri}}"
+    }
+  },
+  "interviewCard": {
+    "interviewSuffix": "Interviu",
+    "defaultAssessment": "Sistemul este pregătit pentru evaluare. Începe simularea pentru a analiza dimensiunile performanței tale.",
+    "check": "Verifică",
+    "start": "Începe"
+  },
+  "interview": {
+    "generation": "Generarea interviurilor",
+    "inputHelperReview": "Am capturat răspunsul dvs. Revizuiți sau editați transcrierea de mai jos, apoi continuați când sunteți gata.",
+    "inputHelperWritingMode": "Modul de scriere este activ. Când vine rândul dvs., intervievatorul va aștepta să tastați în loc să asculte.",
+    "inputHelperVoiceMode": "Modul voce este activ. Spuneți răspunsul, apoi revizuiți transcrierea înainte ca agentul să continue.",
+    "inputHelperNoVoice": "Intrarea vocală nu este disponibilă aici, deci tastați răspunsurile de mai jos pentru a continua interviul.",
+    "inputHelperInactive": "Începeți interviul pentru a răspunde prin voce sau prin tastare de mai jos.",
+    "placeholderReview": "Ajustați transcrierea aici înainte de a continua interviul.",
+    "placeholderActive": "Tastați răspunsul aici. Apăsați Enter pentru a trimite sau Shift + Enter pentru o nouă linie.",
+    "placeholderWaiting": "Așteptați următoarea întrebare înainte de a trimite răspunsul.",
+    "placeholderInactive": "Începeți interviul pentru a debloca răspunsurile text.",
+    "statusReview": "Revizuire transcriere",
+    "statusWriting": "Mod de scriere",
+    "statusListening": "Ascultare răspuns",
+    "statusWaiting": "Așteptare următoarei solicitări",
+    "statusInactive": "Interviu inactiv",
+    "switchToWriting": "Comutare la scriere",
+    "switchToVoice": "Comutare la voce",
+    "transcriptReview": "Revizuire transcriere",
+    "writingMode": "Mod de scriere",
+    "reviewBeforeContinue": "Revizuiți răspunsul înainte de a continua interviul",
+    "typeWhileWaits": "Tastați răspunsul în timp ce intervievatorul așteaptă",
+    "aiInterviewer": "Intervievator AI",
+    "currentPrompt": "Solicitare curentă",
+    "continuing": "Se continuă...",
+    "continueInterview": "Continuați interviul",
+    "sendAnswer": "Trimiteți răspunsul",
+    "connecting": "Se conectează...",
+    "startInterview": "Începeți interviul",
+    "endInterview": "Încheieți interviul",
+    "fellowUser": "Utilizator",
+    "workflow": {
+      "generateGreeting": "Salut, {username}! Eu îți voi adresa câteva întrebări și voi genera un interviu perfect special pentru tine. Să începem!",
+      "generateRoleQuestion": "Pentru ce rol ai vrea să te pregătești?",
+      "generateTypeQuestion": "Țintești un interviu tehnic, comportamental sau mixt?",
+      "generateLevelQuestion": "Spune-mi nivelul tău de experiență profesională.",
+      "generateTechstackQuestion": "Ce tehnologii ai vrea să acoperim în interviul pentru job?",
+      "generateAmountQuestion": "Câte întrebări ai vrea să îți pregătesc?",
+      "interviewGreeting": "Salut, {username}! Îți mulțumesc că ți-ai făcut timp să discutăm astăzi. Abia aștept să aflu mai multe despre tine și experiența ta.",
+      "finalGenerateMessage": "Mulțumesc pentru răspunsuri, interviul va fi generat în câteva secunde!",
+      "finalInterviewMessage": "Îți mulțumesc pentru timpul acordat. Vom analiza răspunsurile tale și vom reveni cu feedback cât mai curând posibil.",
+      "finalErrorMessage": "Se pare că există probleme de conexiune. Din păcate, trebuie să închidem acest apel.",
+      "unrecognizedSpeech": [
+        "Îmi pare rău, nu am înțeles răspunsul tău. Poți repeta, te rog?",
+        "Încă nu am auzit clar răspunsul. Te rog să vorbești mai clar.",
+        "Încă nu aud un răspuns din partea ta."
+      ],
+      "undetectedAudio": [
+        "Se pare că am probleme la accesarea microfonului tău. Îl poți verifica, te rog?",
+        "Încă nu te pot auzi. Asigură-te, te rog, că microfonul este activat.",
+        "Microfonul tău poate fi dezactivat sau indisponibil."
+      ]
+    },
+    "prompts": {
+      "generation": {
+        "template": "{languageInstruction}\nPregătește întrebări pentru un interviu de angajare.\nRolul jobului este {role}.\nNivelul de experiență profesională este {level}.\nUtilizatorul a descris stack-ul tehnologic în limbaj natural astfel: {techstack}.\nAccentul dintre întrebările comportamentale și cele tehnice trebuie să fie orientat spre: {type}.\nNumărul de întrebări necesare este: {amount}.\n\nSarcina ta:\n1) Extrage doar numele tehnologiilor menționate de utilizator și ignoră toate cuvintele de umplutură sau zgomot.\n2) Generează întrebări de interviu aliniate cu tehnologiile extrase.\n\nCerințe pentru output:\n- Returnează DOAR JSON valid.\n- Fără markdown, fără code fences, fără text suplimentar.\n- Structura JSON trebuie să fie exact:\n  {\"questions\": [\"Question 1\", \"Question 2\"], \"technologies\": [\"java\", \"spring boot\", \"sql\"]}\n\nConstrângeri suplimentare:\n- Întrebările vor fi citite de un asistent vocal, așa că nu folosi slash, asterisc sau alte caractere speciale care ar putea afecta redarea vocală.",
+        "languageInstruction": "Generează toate întrebările de interviu în limba română."
+      },
+      "feedback": {
+        "template": "{languageInstruction}\nEști un intervievator tehnic expert și coach de carieră. De asemenea, ești un intervievator AI care analizează un interviu simulat.\nSarcina ta este să evaluezi candidatul pe baza unor categorii structurate.\nFii riguros și detaliat în analiză. Nu fi indulgent cu candidatul.\n\nContext despre acest interviu:\n- Rol: {role}\n- Nivel: {level}\n- Focusul interviului: {type}\n- Stack tehnologic: {technologies}\n\nMai jos este transcrierea interviului sub formă de perechi întrebare și răspuns:\n--- TRANSCRIPT START ---\n{transcript}\n--- TRANSCRIPT END ---\n\nSarcină: Oferă feedback concis și aplicabil, adaptat rolului, nivelului, tipului și stack-ului tehnologic de mai sus.\n\nREGULI IMPORTANTE PENTRU OUTPUT:\n- Returnează DOAR JSON valid. Fără markdown, fără code fences, fără text suplimentar.\n- JSON-ul TREBUIE să respecte strict această structură:\n  {\n    \"totalScore\": 0,\n    \"categoryScores\": [\n      {\"name\": \"Communication Skills\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Technical Knowledge\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Problem Solving\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Cultural Fit\", \"score\": 0, \"comment\": \"...\"},\n      {\"name\": \"Confidence and Clarity\", \"score\": 0, \"comment\": \"...\"}\n    ],\n    \"strengths\": [\"...\"],\n    \"areasForImprovement\": [\"...\"],\n    \"finalAssessment\": \"...\"\n  }\n- Nu redenumi numele categoriilor. Folosește EXACT aceste stringuri:\n  \"Communication Skills\", \"Technical Knowledge\", \"Problem Solving\", \"Cultural Fit\", \"Confidence and Clarity\".\n- Nu adăuga, elimina, reordona sau imbrica categorii.\n\nGhid de scor:\n- Communication Skills: claritate, articulare și răspunsuri bine structurate.\n- Technical Knowledge: înțelegerea conceptelor cheie pentru rol.\n- Problem Solving: abilitatea de a analiza probleme și de a propune soluții.\n- Cultural Fit: alinierea cu așteptările rolului și colaborarea.\n- Confidence and Clarity: încredere în răspunsuri, implicare și claritate.\n\nReguli suplimentare:\n- Bazează feedbackul doar pe transcriere.\n- Dacă lipsesc informații, precizează ce lipsește și cum a influențat evaluarea.\n- Fii profesionist, direct și constructiv.",
+        "languageInstruction": "Returnează toate comentariile de feedback, punctele forte, ariile de îmbunătățire și evaluarea finală în limba română."
+      }
+    },
+    "interviewTypes": {
+      "mixed": "Mixt",
+      "technical": "Tehnic",
+      "behavioral": "Comportamental"
+    },
+    "feedback": {
+      "title": "Feedback pe interviu - ",
+      "interview": "Interviu",
+      "overallImpression": "Impresie generală:",
+      "breakdownOfInterview": "Analiza interviurilor:",
+      "strengths": "Puncte forte",
+      "areasForImprovement": "Arii de îmbunătățire",
+      "backToDashboard": "Înapoi la tablou de bord",
+      "retakeInterview": "Reluați interviul",
+      "back": "Înapoi",
+      "next": "Următor",
+      "attemptOf": "Tentativa {current} din {total}",
+      "notAvailable": "N/A",
+      "categoryNames": {
+        "Communication Skills": "Abilități de comunicare",
+        "Technical Knowledge": "Cunoștințe tehnice",
+        "Problem Solving": "Rezolvare de probleme",
+        "Cultural Fit": "Potrivire culturală",
+        "Confidence and Clarity": "Încredere și claritate"
+      }
+    }
+  }
+}

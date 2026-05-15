@@ -5,23 +5,32 @@ import {load, speak, stopSpeaking} from '../../integrations/tts/elevenLabsConfig
 import {createEventEmitter} from './eventEmitter';
 import {createStateMachine} from '@/features/agent/stateMachine';
 import {
-    FINAL_ERROR_MESSAGE,
-    MAX_ERROR_RETRIES,
     AUDIO_ERROR_RETRY_DELAY,
-    TRANSCRIPT_MESSAGE_DELAY,
-    UNDETECTED_AUDIO_ERROR_MESSAGES,
-    UNRECOGNIZED_SPEECH_ERROR_MESSAGES,
-    FINAL_GENERATE_WORKFLOW_MESSAGE, FINAL_INTERVIEW_WORKFLOW_MESSAGE
+    getFinalErrorMessage,
+    getFinalGenerateWorkflowMessage,
+    getFinalInterviewWorkflowMessage,
+    getUndetectedAudioErrorMessages,
+    getUnrecognizedSpeechErrorMessages,
+    MAX_ERROR_RETRIES,
+    TRANSCRIPT_MESSAGE_DELAY
 } from '@/commons/constants';
 import {AgentMode, InterviewEvent, QuestionType, TranscriptMessage} from "@/commons/enums";
 import {
-    AgentParams, AnswerInputMode, InterviewDoc, InterviewDialogPayload, InterviewGenerationPayload,
-    AnswerInputReadyPayload, FeedbackReadyPayload, State, TranscriptMessageEmitter
+    AgentParams,
+    AnswerInputMode,
+    AnswerInputReadyPayload,
+    FeedbackReadyPayload,
+    InterviewDialogPayload,
+    InterviewDoc,
+    InterviewGenerationPayload,
+    State,
+    TranscriptMessageEmitter
 } from "@/commons/types";
 
 export function createInterviewController(
     username: string,
-    userId: string
+    userId: string,
+    locale: string
 ) {
     const eventEmitter = createEventEmitter();
 
@@ -59,11 +68,11 @@ export function createInterviewController(
         }
 
         let workflow;
-        if(mode === AgentMode.GENERATE){
-            workflow = generateInterviewWorkflow(username);
+        if (mode === AgentMode.GENERATE) {
+            workflow = await generateInterviewWorkflow(username, locale);
             stateMachine = createStateMachine(workflow, mode);
         } else if (mode === AgentMode.INTERVIEW && interview?.questions?.length) {
-            workflow = ongoingInterviewWorkflow(username, interview.questions);
+            workflow = await ongoingInterviewWorkflow(username, interview.questions, locale);
             stateMachine = createStateMachine(workflow, mode);
         } else {
             stop();
@@ -124,7 +133,8 @@ export function createInterviewController(
 
                 countUnrecognizedSpeechRetries++;
                 if (countUnrecognizedSpeechRetries <= MAX_ERROR_RETRIES) {
-                    const retryText = UNRECOGNIZED_SPEECH_ERROR_MESSAGES[countUnrecognizedSpeechRetries - 1];
+                    const errorMessages = await getUnrecognizedSpeechErrorMessages(locale);
+                    const retryText = Array.isArray(errorMessages) ? errorMessages[countUnrecognizedSpeechRetries - 1] : "";
                     const previousQuestionText = stateMachine.current()?.text ?? "";
                     await handleAudioErrorRetry(previousQuestionText, retryText);
                     return;
@@ -146,7 +156,8 @@ export function createInterviewController(
                 countUndetectedAudioRetries++;
 
                 if (countUndetectedAudioRetries <= MAX_ERROR_RETRIES) {
-                    const retryText = UNDETECTED_AUDIO_ERROR_MESSAGES[countUndetectedAudioRetries - 1];
+                    const errorMessages = await getUndetectedAudioErrorMessages(locale);
+                    const retryText = Array.isArray(errorMessages) ? errorMessages[countUndetectedAudioRetries - 1] : "";
                     const previousQuestionText = stateMachine.current()?.text ?? "";
                     await handleAudioErrorRetry(previousQuestionText, retryText);
                     return;
@@ -188,7 +199,8 @@ export function createInterviewController(
                 speechRecognition.onresult = null;
                 speechRecognition.abort();
             }
-        } catch {}
+        } catch {
+        }
 
         eventEmitter.emit(InterviewEvent.USER_LISTEN_END);
 
@@ -259,7 +271,7 @@ export function createInterviewController(
 
     async function handleNextState(transcript?: string) {
         const nextState = stateMachine.next(transcript);
-        if(!agentMode) {
+        if (!agentMode) {
             stop();
             return;
         }
@@ -325,23 +337,37 @@ export function createInterviewController(
         setAwaitingUserResponse();
         eventEmitter.emit(InterviewEvent.SPEECH_START);
 
-        if(mode === AgentMode.GENERATE){
-            emitTranscriptMessage(FINAL_GENERATE_WORKFLOW_MESSAGE);
-            await speak(FINAL_GENERATE_WORKFLOW_MESSAGE);
+        if (mode === AgentMode.GENERATE) {
+            const finalGenerateMessage = await getFinalGenerateWorkflowMessage(locale);
+            emitTranscriptMessage(finalGenerateMessage);
+            await speak(finalGenerateMessage);
             eventEmitter.emit(InterviewEvent.SPEECH_END);
+
+            const role = stateMachine.answers.role ?? "";
+            const type = stateMachine.answers.type ?? "";
+            const level = stateMachine.answers.level ?? "";
+            const techstack = stateMachine.answers.techstack ?? "";
+            const amount = stateMachine.answers.amount ?? "";
+
             await submitGenerateAnswersToAi({
-                ...stateMachine.answers,
-                userId
+                userId,
+                role,
+                type,
+                level,
+                techstack,
+                amount,
+                locale,
             } satisfies InterviewGenerationPayload);
             eventEmitter.emit(InterviewEvent.CALL_END);
             return;
         }
 
-        emitTranscriptMessage(FINAL_INTERVIEW_WORKFLOW_MESSAGE);
-        await speak(FINAL_INTERVIEW_WORKFLOW_MESSAGE);
+        const finalInterviewMessage = await getFinalInterviewWorkflowMessage(locale);
+        emitTranscriptMessage(finalInterviewMessage);
+        await speak(finalInterviewMessage);
         eventEmitter.emit(InterviewEvent.SPEECH_END);
 
-        if(!thisInterview?.id) {
+        if (!thisInterview?.id) {
             stop();
             return;
         }
@@ -354,6 +380,7 @@ export function createInterviewController(
             level: thisInterview.level,
             type: thisInterview.type,
             technologies: thisInterview.technologies,
+            locale,
         } satisfies InterviewDialogPayload);
 
         if (aiAnswersResponse?.success && aiAnswersResponse?.feedbackId) {
@@ -394,15 +421,16 @@ export function createInterviewController(
             }
         }, AUDIO_ERROR_RETRY_DELAY);
     }
-    
+
     async function handleAudioErrorEndUp() {
         if (isStateMachineStopped) return;
         isStateMachineStopped = true;
         isAnswerTurnActive = false;
         setAwaitingUserResponse();
         eventEmitter.emit(InterviewEvent.SPEECH_START);
-        emitTranscriptMessage(FINAL_ERROR_MESSAGE);
-        await speak(FINAL_ERROR_MESSAGE);
+        const finalErrorMessage = await getFinalErrorMessage(locale);
+        emitTranscriptMessage(finalErrorMessage);
+        await speak(finalErrorMessage);
         eventEmitter.emit(InterviewEvent.SPEECH_END);
         eventEmitter.emit(InterviewEvent.CALL_END);
     }
@@ -426,7 +454,8 @@ export function createInterviewController(
             shouldIgnoreRecognitionCallbacks = true;
             try {
                 speechRecognition.abort();
-            } catch {}
+            } catch {
+            }
         }
 
         eventEmitter.emit(InterviewEvent.USER_LISTEN_END);
@@ -457,7 +486,8 @@ export function createInterviewController(
 
                 try {
                     speechRecognition.abort();
-                } catch {}
+                } catch {
+                }
             }
 
             eventEmitter.emit(InterviewEvent.USER_LISTEN_END);

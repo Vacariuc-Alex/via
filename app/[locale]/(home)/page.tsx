@@ -1,13 +1,17 @@
 import React from 'react'
 import Link from "next/link";
 import Image from "next/image";
+import {getLocale, getTranslations} from 'next-intl/server';
 import InterviewCard from "@/components/InterviewCard/InterviewCard";
 import PerformanceDashboard from "@/components/Dashboard/PerformanceDashboard";
 import {getCurrentUser} from "@/features/service/auth";
 import {getInterviewsByUserId, getLatestInterviewsByOtherUsers} from "@/features/service/interview";
 import {getInterviewPerformanceStatsByUserId} from "@/features/service/feedback";
+import {getLocalizedPath} from "@/features/translation/routing";
 
 const Page = async () => {
+    const t = await getTranslations('home');
+    const locale = await getLocale();
     const user = await getCurrentUser();
     const userId = user?.id || "";
 
@@ -27,14 +31,14 @@ const Page = async () => {
                 <div className="banner-corner-accent" />
                 <div className="flex flex-col gap-6 max-w-lg z-10">
                     <h2 className="text-white text-4xl font-bold tracking-tight leading-tight">
-                        Get Interview-Ready with <span className="text-cyan-400">AI-Powered</span> Practice
+                        {t('bannerTitle')} <span className="text-cyan-400">{t('bannerHighlight')}</span> {t('bannerSubtitle')}
                     </h2>
                     <p className="text-lg text-light-100/70 font-medium">
-                        Practice on real interview questions & get instant feedback
+                        {t('bannerDescription')}
                     </p>
                     <div className="relative w-fit group">
-                        <Link href="/interview" className="banner-btn">
-                            <span className="relative z-10">Start an Interview</span>
+                        <Link href={getLocalizedPath("/interview", locale)} className="banner-btn">
+                            <span className="relative z-10">{t('startInterview')}</span>
                         </Link>
                         <div className="absolute top-0 -left-4 w-2 h-2 bg-cyan-400 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:translate-x-4" />
                     </div>
@@ -53,7 +57,7 @@ const Page = async () => {
             </section>
             <PerformanceDashboard stats={performanceStats} username={user?.username} />
             <section className="flex flex-col gap-6 mt-8">
-                <h2>Your Interviews</h2>
+                <h2>{t('yourInterviews')}</h2>
                 <div className="interview-section">
                     {
                         hasUserPassedInterviews ? (
@@ -61,13 +65,13 @@ const Page = async () => {
                                 <InterviewCard key={e.id} id={e.id} {...e} />
                             ) : null)
                         ) : (
-                            <p>You haven&#39;t taken any interview yet</p>
+                            <p>{t('noInterviewsTaken')}</p>
                         )
                     }
                 </div>
             </section>
             <section className="flex flex-col gap-6 mt-8">
-                <h2>Take an Interview</h2>
+                <h2>{t('takeInterview')}</h2>
                 <div className="interview-section">
                     {
                         hadOtherPassedInterviews ? (
@@ -75,7 +79,7 @@ const Page = async () => {
                                 <InterviewCard key={e.id} id={e.id} {...e} />
                             ) : null)
                         ) : (
-                            <p>There are no new interviews available</p>
+                            <p>{t('noNewInterviews')}</p>
                         )
                     }
                 </div>
